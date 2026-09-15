@@ -1,5 +1,7 @@
 # ระบบตรวจสอบผลงานวิชาการก่อนส่งประเมินวิทยฐานะครูเชี่ยวชาญ (สอศ.)
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fapichatnernprom-ai%2Fap-academic-evaluator)
+
 เว็บแอปพลิเคชันสำหรับการตรวจสอบความพร้อมและตรวจประเมินผลงานวิชาการก่อนส่งประเมินวิทยฐานะครูเชี่ยวชาญ สังกัดสำนักงานคณะกรรมการการอาชีวศึกษา (สอศ.)
 
 ## 🌟 ฟังก์ชันการทำงานหลัก
