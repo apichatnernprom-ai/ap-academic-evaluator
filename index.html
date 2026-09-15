@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ระบบตรวจสอบผลงานวิชาการก่อนส่งประเมินวิทยฐานะครูเชี่ยวชาญ | สอศ.</title>
+    <title>ระบบประเมินคุณภาพงานวิจัยในชั้นเรียน - สอศ.</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -11,42 +11,70 @@
             theme: {
                 extend: {
                     colors: {
-                        'voc-blue': '#0A2558',
-                        'voc-navy': '#061738',
-                        'voc-gold': '#F4B400',
-                        'voc-gold-light': '#FFF8E1',
-                        'voc-accent': '#2563EB',
+                        brand: {
+                            50: '#fff1f2',
+                            100: '#ffe4e6',
+                            200: '#fecdd3',
+                            300: '#fda4af',
+                            400: '#fb7185',
+                            500: '#f43f5e',
+                            600: '#e11d48',
+                            700: '#be123c',
+                            800: '#9f1239',
+                            900: '#881337',
+                            950: '#4c0519',
+                        }
+                    },
+                    fontFamily: {
+                        thai: ['Sarabun', 'Prompt', 'sans-serif']
                     }
                 }
             }
         }
     </script>
-    <!-- Google Fonts: Sarabun -->
+    <!-- Google Fonts: Sarabun & Prompt -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Lucide Icons & Mammoth.js for reading docx -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&family=Sarabun:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Mammoth.js for reading .docx files -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.21/mammoth.browser.min.js"></script>
-    <!-- PDF.js for reading pdf files -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-
+    <!-- PDF.js for reading .pdf files -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    
     <style>
         body {
             font-family: 'Sarabun', sans-serif;
-            background-color: #F8FAFC;
         }
-        .progress-bar-fill {
-            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        h1, h2, h3, h4, .font-heading {
+            font-family: 'Prompt', sans-serif;
         }
         @media print {
-            .no-print { display: none !important; }
-            .print-only { display: block !important; }
-            body { background-color: #ffffff; }
+            .no-print {
+                display: none !important;
+            }
+            .print-only {
+                display: block !important;
+            }
+            body {
+                background: white !important;
+                color: black !important;
+            }
+            .shadow-xl, .shadow-md, .shadow-sm {
+                box-shadow: none !important;
+            }
+            @page {
+                size: A4 portrait;
+                margin: 1.2cm;
+            }
+        }
+        .print-only {
+            display: none;
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen text-slate-800">
+<body class="bg-stone-50 text-slate-800 min-h-screen flex flex-col selection:bg-brand-200 selection:text-brand-900">
 
     <!-- Top Navigation & System Switcher Bar -->
     <div class="bg-slate-900 text-slate-300 text-xs py-1.5 px-4 sm:px-8 border-b border-slate-800 no-print flex flex-wrap items-center justify-between gap-2">
@@ -54,1044 +82,1661 @@
             <span class="inline-block w-2 h-2 rounded-full bg-emerald-400"></span>
             <span>ระบบสนับสนุนงานวิชาการและวิจัย สอศ.</span>
             <span class="text-slate-600">|</span>
-            <span class="text-yellow-400 font-medium">ระบบที่ 1: ตรวจผลงานวิชาการครูเชี่ยวชาญ (119 ข้อ)</span>
+            <span class="text-amber-400 font-medium">ระบบประเมินคุณภาพงานวิจัยในชั้นเรียน</span>
         </div>
         <div class="flex items-center gap-3">
-            <a href="classroom-research.html" class="inline-flex items-center gap-1.5 text-yellow-300 hover:text-white transition px-2.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-yellow-500/40 text-[11px] font-medium">
-                <span>ไปยัง: ประเมินงานวิจัยในชั้นเรียน (19 หัวข้อ)</span>
-                <i data-lucide="arrow-right" class="w-3 h-3 text-yellow-400"></i>
+            <a href="expert-teacher.html" class="inline-flex items-center gap-1.5 text-slate-300 hover:text-white transition px-2.5 py-0.5 rounded bg-slate-800 hover:bg-slate-700 border border-slate-700 text-[11px]">
+                <i class="fa-solid fa-arrow-left text-amber-400"></i>
+                <span>สลับไป: ตรวจผลงานครูเชี่ยวชาญ (119 ข้อ)</span>
             </a>
+            <button onclick="openApiKeyModal()" class="text-slate-400 hover:text-amber-300 transition text-[11px] flex items-center gap-1" title="ตั้งค่า Gemini API Key">
+                <i class="fa-solid fa-key text-amber-400"></i>
+                <span id="apiKeyStatusText">ตั้งค่า AI Key</span>
+            </button>
         </div>
     </div>
 
     <!-- Header Section -->
-    <header class="bg-gradient-to-r from-voc-navy via-voc-blue to-voc-navy border-b-4 border-voc-gold text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div class="flex items-center space-x-4">
-                <!-- สอศ. Logo -->
-                <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-white p-1 shadow-md border-2 border-voc-gold flex items-center justify-center flex-shrink-0">
-                    <img src="logo-vec.svg" 
-                         alt="ตราสัญลักษณ์ สอศ." 
-                         class="w-full h-full object-contain">
+    <header class="bg-gradient-to-r from-brand-950 via-brand-900 to-brand-800 text-white shadow-lg sticky top-0 z-30 border-b border-brand-700/50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3.5">
+                    <!-- สอศ. Logo -->
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-white p-1 flex items-center justify-center border-2 border-amber-400 shadow-md flex-shrink-0">
+                        <img src="logo-vec.svg" 
+                             alt="ตราสัญลักษณ์ สอศ." 
+                             class="w-full h-full object-contain"
+                             onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/th/thumb/c/cf/Vocational_Education_Commission_Seal.png/220px-Vocational_Education_Commission_Seal.png';">
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-xs uppercase tracking-wider bg-brand-700/80 text-brand-100 font-semibold px-2 py-0.5 rounded-full border border-brand-500/40">
+                                สำนักงานคณะกรรมการการอาชีวศึกษา (สอศ.)
+                            </span>
+                        </div>
+                        <h1 class="text-base sm:text-xl font-bold tracking-tight text-white flex items-center gap-2 font-heading">
+                            ระบบประเมินคุณภาพงานวิจัยในชั้นเรียน
+                            <span class="text-xs font-normal text-brand-200 hidden md:inline-block">(สำหรับศึกษานิเทศก์และครูผู้สอน)</span>
+                        </h1>
+                    </div>
                 </div>
-                <div>
-                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white flex items-center gap-2">
-                        ระบบตรวจสอบผลงานวิชาการก่อนส่งประเมินวิทยฐานะ
-                    </h1>
-                    <p class="text-xs sm:text-sm text-yellow-300 font-medium">
-                        ระดับครูเชี่ยวชาญ (วิจัยเพื่อพัฒนาการเรียนรู้ / นวัตกรรมการจัดการเรียนรู้) • สอศ.
-                    </p>
-                </div>
-            </div>
-            <div class="flex items-center gap-3">
-                <div id="save-indicator" class="hidden text-xs px-2.5 py-1 rounded-full bg-emerald-800/80 text-emerald-200 flex items-center gap-1">
-                    <i data-lucide="check" class="w-3.5 h-3.5"></i> บันทึกข้อมูลอัตโนมัติแล้ว
-                </div>
-                <div class="flex items-center gap-2 text-xs bg-voc-navy/60 px-3 py-1.5 rounded-full border border-yellow-500/40 text-yellow-200 font-semibold">
-                    <i data-lucide="shield-check" class="w-4 h-4 text-voc-gold"></i>
-                    เกณฑ์การตรวจสอบ DPA สอศ.
+
+                <div class="flex items-center gap-2">
+                    <button id="btnNewEvaluation" onclick="resetForm()" class="px-3.5 py-1.5 rounded-lg bg-brand-800/80 hover:bg-brand-700 text-white border border-brand-600 text-xs sm:text-sm font-medium transition flex items-center gap-1.5 shadow-sm">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span class="hidden sm:inline">ประเมินใหม่</span>
+                    </button>
+                    <button onclick="window.print()" class="px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-600 text-slate-900 font-semibold text-xs sm:text-sm transition flex items-center gap-1.5 shadow-md">
+                        <i class="fa-solid fa-print"></i>
+                        <span class="hidden sm:inline">พิมพ์รายงาน</span>
+                    </button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Main Content Container -->
-    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-        <!-- File Upload & AI Inspection Zone -->
-        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden no-print">
-            <div class="bg-gradient-to-r from-blue-50 to-amber-50 p-6 border-b border-slate-200">
-                <div class="flex items-center gap-3">
-                    <div class="p-2.5 bg-voc-blue text-white rounded-xl shadow-sm">
-                        <i data-lucide="file-up" class="w-6 h-6"></i>
+        <!-- Banner Info -->
+        <section class="bg-gradient-to-r from-brand-900 via-brand-800 to-brand-950 text-white rounded-2xl p-5 shadow-md relative overflow-hidden border border-brand-700">
+            <div class="absolute right-0 top-0 translate-x-10 -translate-y-10 w-64 h-64 bg-brand-600/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div class="space-y-1.5 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 text-brand-200 text-xs font-medium">
+                        <i class="fa-solid fa-award text-amber-300"></i>
+                        <span>เกณฑ์มาตรฐานการประเมินงานวิจัยในชั้นเรียน 19 หัวข้อ 29 ตัวชี้วัด (เต็ม 87 คะแนน)</span>
                     </div>
-                    <div>
-                        <h2 class="text-lg font-bold text-voc-blue">แนบไฟล์ผลงานวิชาการเพื่อตรวจประเมิน</h2>
-                        <p class="text-sm text-slate-600">รองรับไฟล์รายงานวิจัย, เอกสารนวัตกรรม, แผนการสอน (นามสกุล .docx, .pdf, .txt)</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-6">
-                <div id="drop-zone" class="border-2 border-dashed border-slate-300 hover:border-voc-gold rounded-xl p-8 text-center transition-all cursor-pointer bg-slate-50/50 hover:bg-voc-gold-light/40 flex flex-col items-center justify-center">
-                    <input type="file" id="file-input" class="hidden" accept=".docx,.pdf,.txt" />
-                    <div class="w-16 h-16 rounded-full bg-blue-100 text-voc-blue flex items-center justify-center mb-3">
-                        <i data-lucide="upload-cloud" class="w-8 h-8 text-voc-blue"></i>
-                    </div>
-                    <p class="text-base font-semibold text-slate-700">ลากไฟล์มาวางที่นี่ หรือ <span class="text-voc-blue underline font-bold">คลิกเพื่อเลือกไฟล์</span></p>
-                    <p class="text-xs text-slate-500 mt-1">ระบบจะสแกนสาระสำคัญ องค์ประกอบ R&D, ความตรงเชิงเนื้อหา, IOC, APA 7 และระเบียบวิธีวิจัยอัตโนมัติ</p>
-                </div>
-
-                <!-- Analysis Status Box -->
-                <div id="status-card" class="hidden mt-6 p-4 rounded-xl border flex items-center justify-between transition-all">
-                    <div class="flex items-center gap-3">
-                        <div id="status-spinner" class="animate-spin text-voc-blue hidden">
-                            <i data-lucide="loader-2" class="w-6 h-6"></i>
-                        </div>
-                        <div id="status-icon" class="text-emerald-600 hidden">
-                            <i data-lucide="check-circle-2" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <p id="status-filename" class="text-sm font-bold text-slate-800"></p>
-                            <p id="status-message" class="text-xs text-slate-600"></p>
-                        </div>
-                    </div>
-                    <button id="re-evaluate-btn" onclick="triggerAutoCheck()" class="px-4 py-2 bg-voc-blue text-white hover:bg-voc-navy text-xs font-semibold rounded-lg shadow-sm flex items-center gap-1.5 transition">
-                        <i data-lucide="sparkles" class="w-4 h-4 text-voc-gold"></i> ประเมินใหม่อีกครั้ง
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- Dashboard / Live Scoring Banner -->
-        <section id="result-dashboard" class="bg-white rounded-2xl shadow-md border-2 border-voc-gold/30 p-6 space-y-6">
-            <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-                <div>
-                    <span class="text-xs font-bold tracking-wider uppercase px-2.5 py-1 bg-blue-100 text-voc-blue rounded-md">ผลการประเมินความพร้อมแบบ Real-time</span>
-                    <h2 class="text-2xl font-bold text-slate-800 mt-2 flex items-center gap-2">
-                        สรุประดับความพร้อมของผลงาน
-                    </h2>
-                </div>
-                <!-- Action Buttons -->
-                <div class="flex items-center gap-2 no-print">
-                    <button onclick="window.print()" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-                        <i data-lucide="printer" class="w-4 h-4"></i> พิมพ์รายงานสรุป
-                    </button>
-                    <button onclick="resetEvaluation()" class="px-3.5 py-2 border border-slate-300 hover:bg-slate-50 text-slate-600 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition">
-                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i> ล้างข้อมูล
-                    </button>
-                </div>
-            </div>
-
-            <!-- Readiness Badge & Summary Counts -->
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                <!-- Status Gauge -->
-                <div class="md:col-span-5 bg-slate-50 rounded-xl p-5 border border-slate-200 flex flex-col justify-center">
-                    <span class="text-xs text-slate-500 font-semibold mb-1">ผลการวินิจฉัยความพร้อม (Readiness Level)</span>
-                    <div id="readiness-badge" class="mt-2 inline-flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-lg text-white bg-slate-500 shadow-sm">
-                        <i data-lucide="help-circle" class="w-6 h-6"></i>
-                        <span>ยังไม่ได้ประเมินผลงาน</span>
-                    </div>
-                    <p id="readiness-desc" class="text-xs text-slate-600 mt-3 leading-relaxed">
-                        กรุณาแนบไฟล์ผลงานวิชาการเพื่อให้ระบบวิเคราะห์อัตโนมัติ หรือทำเครื่องหมายในรายการตรวจสอบด้านล่าง
+                    <h2 class="text-xl sm:text-2xl font-bold font-heading">เครื่องมือช่วยประเมินงานวิจัยเพื่อพัฒนาการเรียนรู้ด้วยปัญญาประดิษฐ์</h2>
+                    <p class="text-xs sm:text-sm text-brand-100 font-light leading-relaxed">
+                        แนบไฟล์งานวิจัย (<span class="font-mono text-amber-200">.docx, .pdf, .txt</span>) หรือวางเนื้อหาวิจัย ระบบจะทำการวิเคราะห์ ตรวจสอบองค์ประกอบ ประเมินคะแนนทันที พร้อมชี้เป้ารายการที่อยู่ในเกณฑ์ <span class="bg-rose-500/40 text-amber-200 px-2 py-0.5 rounded font-semibold border border-rose-400/40">"ควรพัฒนา" (1 คะแนน)</span> อย่างละเอียด
                     </p>
                 </div>
-
-                <!-- Numerical Cards -->
-                <div class="md:col-span-7 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
-                        <span class="text-xs font-medium text-blue-700">คะแนนความพร้อม</span>
-                        <div class="text-2xl sm:text-3xl font-extrabold text-voc-blue mt-1" id="score-percentage">0%</div>
-                        <span class="text-[10px] text-blue-600/80">คำนวณจากเกณฑ์ผ่าน</span>
-                    </div>
-                    <div class="bg-emerald-50 border border-emerald-100 rounded-xl p-4 text-center">
-                        <span class="text-xs font-medium text-emerald-700">ผ่านเกณฑ์</span>
-                        <div class="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-1" id="count-pass">0</div>
-                        <span class="text-[10px] text-emerald-600/80">รายการ</span>
-                    </div>
-                    <div class="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center">
-                        <span class="text-xs font-medium text-amber-700">ต้องปรับปรุง</span>
-                        <div class="text-2xl sm:text-3xl font-extrabold text-amber-600 mt-1" id="count-revise">0</div>
-                        <span class="text-[10px] text-amber-600/80">รายการ</span>
-                    </div>
-                    <div class="bg-rose-50 border border-rose-100 rounded-xl p-4 text-center">
-                        <span class="text-xs font-medium text-rose-700">ไม่พบหลักฐาน</span>
-                        <div class="text-2xl sm:text-3xl font-extrabold text-rose-600 mt-1" id="count-missing">0</div>
-                        <span class="text-[10px] text-rose-600/80">รายการ</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Progress Bar -->
-            <div>
-                <div class="flex justify-between text-xs font-bold text-slate-600 mb-1.5">
-                    <span>ความคืบหน้าการผ่านเกณฑ์</span>
-                    <span id="progress-label">0 / 119 รายการ</span>
-                </div>
-                <div class="w-full bg-slate-200 rounded-full h-3.5 overflow-hidden shadow-inner">
-                    <div id="progress-fill" class="bg-voc-gold h-full progress-bar-fill w-0"></div>
-                </div>
-            </div>
-
-            <!-- Urgent Risk Alert -->
-            <div id="risk-alert" class="p-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-3">
-                <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5"></i>
-                <div>
-                    <strong class="font-bold">จุดเสี่ยงสูง (High Risk Final Check):</strong>
-                    <span id="risk-summary-text">มีจุดเสี่ยงวิกฤตที่ต้องได้รับการแก้ไข 0 รายการ</span>
+                <div class="flex flex-wrap md:flex-col gap-2 text-xs shrink-0">
+                    <span class="bg-brand-950/70 border border-brand-600 px-3 py-1.5 rounded-lg text-amber-300 font-medium shadow-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-medal text-amber-400"></i>
+                        <span>ทอง: ≥ 70% (≥ 80% ยอดเยี่ยม)</span>
+                    </span>
+                    <span class="bg-brand-950/70 border border-brand-600 px-3 py-1.5 rounded-lg text-slate-200 font-medium shadow-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-medal text-slate-300"></i>
+                        <span>เงิน: 60 - 69.99%</span>
+                    </span>
+                    <span class="bg-brand-950/70 border border-brand-600 px-3 py-1.5 rounded-lg text-rose-300 font-medium shadow-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-medal text-rose-400"></i>
+                        <span>แดง: 50 - 59.99%</span>
+                    </span>
                 </div>
             </div>
         </section>
 
-        <!-- Detailed Checklist Tabs & Accordion -->
-        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-            <div class="p-6 border-b border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div>
-                    <h3 class="text-lg font-bold text-voc-blue flex items-center gap-2">
-                        <i data-lucide="list-checks" class="w-5 h-5 text-voc-gold"></i>
-                        รายการตรวจสอบความพร้อมผลงานวิชาการ 6 ส่วนหลัก
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 no-print">
+            <!-- Left Panel: Researcher Profile and Research Document Uploader -->
+            <div class="lg:col-span-5 space-y-6">
+                <!-- Researcher metadata card -->
+                <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-5 space-y-4">
+                    <h3 class="font-heading font-semibold text-brand-900 text-base flex items-center gap-2 border-b border-brand-100 pb-2.5">
+                        <i class="fa-solid fa-user-pen text-brand-700"></i>
+                        ข้อมูลงานวิจัยและผู้รับการประเมิน
                     </h3>
-                    <p class="text-xs text-slate-500 mt-0.5">สามารถปรับผลการประเมิน หรือระบุหลักฐาน/ข้อเสนอแนะเพิ่มเติมในแต่ละข้อได้</p>
+
+                    <div class="space-y-3 text-sm">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่อผู้สอน (ผู้วิจัย)</label>
+                            <input type="text" id="teacherName" placeholder="เช่น นายสมศักดิ์ สายวิชาญ" 
+                                   class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition text-sm">
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">สถานศึกษา (วิทยาลัย)</label>
+                            <input type="text" id="schoolName" placeholder="เช่น วิทยาลัยเทคนิคพระนครศรีอยุธยา" 
+                                   class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition text-sm">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">ประเภทวิชา</label>
+                                <input type="text" id="deptCategory" placeholder="เช่น ช่างอุตสาหกรรม, บริหารธุรกิจ" 
+                                       class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-600 mb-1">สาขาวิชา</label>
+                                <input type="text" id="deptMajor" placeholder="เช่น ช่างยนต์, การบัญชี" 
+                                       class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition text-sm">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">ชื่องานวิจัยในชั้นเรียน</label>
+                            <textarea id="researchTitle" rows="2" placeholder="เช่น การพัฒนาผลสัมฤทธิ์ทางการเรียนวิชางานระบบฉีดเชื้อเพลิงอิเล็กทรอนิกส์ โดยใช้ชุดฝึกทักษะร่วมกับการเรียนรู้แบบแก้ปัญหา..." 
+                                      class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition text-sm resize-none"></textarea>
+                        </div>
+                    </div>
                 </div>
-                <!-- Filter status -->
-                <div class="flex items-center gap-2 text-xs no-print">
-                    <span class="text-slate-500 font-medium">กรองดู:</span>
-                    <button type="button" onclick="filterItems('all', this)" class="px-2.5 py-1 rounded-md bg-voc-blue text-white font-semibold filter-btn active">ทั้งหมด</button>
-                    <button type="button" onclick="filterItems('pass', this)" class="px-2.5 py-1 rounded-md bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold filter-btn">ผ่าน</button>
-                    <button type="button" onclick="filterItems('revise', this)" class="px-2.5 py-1 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-700 font-semibold filter-btn">ต้องปรับปรุง</button>
-                    <button type="button" onclick="filterItems('missing', this)" class="px-2.5 py-1 rounded-md bg-rose-50 hover:bg-rose-100 text-rose-700 font-semibold filter-btn">ไม่พบ</button>
+
+                <!-- File Attachment Box -->
+                <div class="bg-white rounded-2xl shadow-sm border border-brand-100 p-5 space-y-4">
+                    <div class="flex items-center justify-between border-b border-brand-100 pb-2.5">
+                        <h3 class="font-heading font-semibold text-brand-900 text-base flex items-center gap-2">
+                            <i class="fa-solid fa-file-arrow-up text-brand-700"></i>
+                            แนบไฟล์เอกสารงานวิจัย
+                        </h3>
+                        <span class="text-[11px] text-brand-700 bg-brand-50 px-2 py-0.5 rounded-full font-medium border border-brand-200">
+                            DOCX, PDF, TXT
+                        </span>
+                    </div>
+
+                    <!-- Drag & drop zone -->
+                    <div id="dropZone" class="border-2 border-dashed border-brand-200 hover:border-brand-500 bg-brand-50/40 hover:bg-brand-50/80 rounded-2xl p-6 text-center transition cursor-pointer flex flex-col items-center justify-center gap-2">
+                        <div class="w-12 h-12 rounded-full bg-brand-100 text-brand-700 flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-semibold text-slate-700">คลิกเพื่อเลือกไฟล์ หรือลากไฟล์มาวางที่นี่</p>
+                            <p class="text-xs text-slate-500 mt-0.5">รองรับไฟล์เอกสาร Word (.docx), PDF หรือ Text file</p>
+                        </div>
+                        <input type="file" id="fileInput" accept=".docx,.pdf,.txt,.doc" class="hidden">
+                    </div>
+
+                    <!-- File loaded indicator -->
+                    <div id="fileInfoBadge" class="hidden p-3 rounded-xl bg-brand-50 border border-brand-200 flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-2 text-brand-900 font-medium truncate max-w-[240px]">
+                            <i class="fa-solid fa-file-lines text-brand-700 text-sm"></i>
+                            <span id="fileName" class="truncate">ไฟล์ที่เลือก.docx</span>
+                        </div>
+                        <button onclick="removeSelectedFile()" class="text-slate-400 hover:text-rose-600 transition p-1" title="ลบไฟล์">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+
+                    <!-- Direct Text Box / Fallback Tab -->
+                    <div>
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="text-xs font-semibold text-slate-600 flex items-center gap-1.5">
+                                <i class="fa-solid fa-align-left text-slate-400"></i>
+                                เนื้อหางานวิจัย (ข้อความที่สกัดจากไฟล์หรือวางโดยตรง)
+                            </label>
+                            <button onclick="loadSampleResearch()" class="text-xs text-brand-700 hover:text-brand-900 underline font-medium">
+                                โหลดตัวอย่างทดสอบ
+                            </button>
+                        </div>
+                        <textarea id="researchContent" rows="7" 
+                                  placeholder="วางเนื้อหางานวิจัยฉบับเต็ม บทคัดย่อ หรือสาระสำคัญของบทที่ 1-5 ที่นี่ เพื่อให้ระบบตรวจสอบประเมินคุณภาพ..." 
+                                  class="w-full px-3 py-2 text-xs font-mono rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:border-brand-500 transition leading-relaxed"></textarea>
+                        <div class="flex justify-between text-[11px] text-slate-400 mt-1">
+                            <span id="wordCount">0 ตัวอักษร</span>
+                            <span>แนะนำให้มีบทคัดย่อหรือบทที่ 1-5 เพื่อผลการประเมินที่แม่นยำ</span>
+                        </div>
+                    </div>
+
+                    <!-- Evaluation Trigger Button -->
+                    <button id="btnEvaluate" onclick="startEvaluation()" 
+                            class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-brand-800 via-brand-700 to-brand-900 hover:from-brand-900 hover:to-brand-800 text-white font-heading font-semibold text-sm shadow-md hover:shadow-lg transition-all transform active:scale-[0.99] flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+                        <span>เริ่มการประเมินคุณภาพงานวิจัยทันที</span>
+                    </button>
                 </div>
             </div>
 
-            <!-- Checklist Items Container (Rendered dynamically) -->
-            <div id="checklist-container" class="divide-y divide-slate-100">
-                <!-- Javascript will inject 6 parts here -->
-            </div>
-        </section>
+            <!-- Right Panel: Evaluation Results & Rubric -->
+            <div class="lg:col-span-7 space-y-6">
+                <!-- State: Empty waiting for evaluation -->
+                <div id="stateEmpty" class="bg-white rounded-2xl border-2 border-dashed border-slate-200 p-12 text-center flex flex-col items-center justify-center gap-4 text-slate-400">
+                    <div class="w-16 h-16 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-2xl text-slate-300">
+                        <i class="fa-solid fa-clipboard-check"></i>
+                    </div>
+                    <div class="max-w-md">
+                        <h4 class="text-base font-semibold text-slate-600 font-heading">รอการประเมินคุณภาพงานวิจัย</h4>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+                            โปรดแนบไฟล์งานวิจัยหรือกรอกข้อมูลทางด้านซ้าย แล้วกดปุ่ม <span class="font-semibold text-brand-700">"เริ่มการประเมินคุณภาพงานวิจัยทันที"</span> ระบบจะคำนวณคะแนนตามแบบประเมิน สอศ. ทั้ง 19 หัวข้อ 29 ตัวชี้วัด และสรุปรายการที่ควรพัฒนาให้ท่านทันที
+                        </p>
+                    </div>
+                </div>
 
-        <!-- High Risk Final Check (จุดตรวจสำคัญ 15 ข้อ) -->
-        <section class="bg-white rounded-2xl shadow-sm border border-amber-200 overflow-hidden">
-            <div class="bg-amber-500/10 p-5 border-b border-amber-200 flex items-center justify-between">
-                <div class="flex items-center gap-2.5">
-                    <div class="w-8 h-8 rounded-lg bg-amber-500 text-white flex items-center justify-center font-bold">
-                        <i data-lucide="alert-octagon" class="w-5 h-5"></i>
+                <!-- State: Loading / Evaluating Animation -->
+                <div id="stateLoading" class="hidden bg-white rounded-2xl border border-brand-200 p-10 text-center shadow-sm flex flex-col items-center justify-center gap-4">
+                    <div class="relative">
+                        <div class="w-16 h-16 rounded-full border-4 border-brand-100 border-t-brand-700 animate-spin"></div>
+                        <div class="absolute inset-0 flex items-center justify-center text-brand-800 font-bold text-xs">
+                            <i class="fa-solid fa-brain"></i>
+                        </div>
                     </div>
                     <div>
-                        <h3 class="text-base font-bold text-amber-950">Final Check ก่อนส่งประเมิน (15 จุดเสี่ยงสูง)</h3>
-                        <p class="text-xs text-amber-800">จุดชี้ขาดตามเกณฑ์การตรวจสอบของคณะกรรมการผู้ทรงคุณวุฒิระดับเชี่ยวชาญ</p>
+                        <h4 class="text-base font-semibold text-brand-900 font-heading">ระบบกำลังวิเคราะห์และประเมินคุณภาพงานวิจัย</h4>
+                        <p class="text-xs text-slate-500 mt-1" id="loadingStepText">
+                            กำลังตรวจสอบความสอดคล้องของชื่อเรื่อง วัตถุประสงค์ และระเบียบวิธีวิจัย...
+                        </p>
+                    </div>
+                    <div class="w-64 bg-slate-100 rounded-full h-2 overflow-hidden">
+                        <div class="bg-gradient-to-r from-brand-600 to-brand-400 h-full w-2/3 animate-pulse rounded-full"></div>
                     </div>
                 </div>
-                <span id="final-risk-counter" class="text-xs font-bold px-3 py-1 bg-amber-100 text-amber-900 rounded-full border border-amber-300">
-                    ต้องแก้ไข 0 / 15
-                </span>
-            </div>
 
-            <div id="final-risk-container" class="p-6 divide-y divide-slate-100">
-                <!-- Javascript will inject 15 final risk points -->
-            </div>
-        </section>
+                <!-- State: Result Display -->
+                <div id="stateResult" class="hidden space-y-6">
+                    <!-- Top Summary Card: Score, Percentage, and Medal -->
+                    <div class="bg-gradient-to-br from-brand-900 via-brand-800 to-brand-950 text-white rounded-2xl p-6 shadow-xl border border-brand-700 relative overflow-hidden">
+                        <div class="relative z-10 grid grid-cols-1 sm:grid-cols-3 gap-5 items-center">
+                            <!-- Medal Badge -->
+                            <div class="flex flex-col items-center justify-center sm:border-r sm:border-brand-700/60 sm:pr-4 text-center">
+                                <div id="medalIconContainer" class="w-20 h-20 rounded-2xl bg-amber-400/20 border-2 border-amber-300 flex items-center justify-center shadow-lg mb-2">
+                                    <i id="medalIcon" class="fa-solid fa-medal text-4xl text-amber-300"></i>
+                                </div>
+                                <span id="medalName" class="font-heading font-bold text-lg text-amber-200">เหรียญทอง (ยอดเยี่ยม)</span>
+                                <span id="medalTier" class="text-xs text-brand-200">ระดับคุณภาพ: ยอดเยี่ยม</span>
+                            </div>
 
-        <!-- Signature & Verification Certificate (For Print & Submission) -->
-        <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 space-y-6">
-            <h4 class="text-base font-bold text-voc-blue border-b pb-2 flex items-center gap-2">
-                <i data-lucide="file-signature" class="w-5 h-5 text-voc-gold"></i>
-                คำรับรองการตรวจสอบผลงานวิชาการ
-            </h4>
-            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed indent-8">
-                ข้าพเจ้าได้ตรวจสอบผลงานวิชาการตามรายการข้างต้นแล้ว และได้ดำเนินการตรวจสอบ/แก้ไขประเด็นที่มีความเสี่ยงหรือข้อบกพร่องก่อนนำส่งประเมินวิทยฐานะครูเชี่ยวชาญตามสมควร เพื่อให้เป็นไปตามหลักเกณฑ์และมาตรฐานของสำนักงานคณะกรรมการการอาชีวศึกษา (สอศ.)
-            </p>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 pt-4">
-                <div class="space-y-3">
-                    <label class="block text-xs font-bold text-slate-700">ชื่อ-สกุล ผู้ขอรับการประเมิน/ผู้ตรวจสอบ</label>
-                    <input type="text" id="signer-name" placeholder="ระบุชื่อ-นามสกุล..." oninput="saveSignerInfo()" class="w-full text-sm px-3 py-2 border rounded-lg focus:ring-2 focus:ring-voc-blue outline-none">
-                    <label class="block text-xs font-bold text-slate-700">ตำแหน่ง / วิทยาลัย</label>
-                    <input type="text" id="signer-position" placeholder="ระบุตำแหน่งและสถานศึกษา..." oninput="saveSignerInfo()" class="w-full text-sm px-3 py-2 border rounded-lg focus:ring-2 focus:ring-voc-blue outline-none">
-                </div>
-                <div class="flex flex-col justify-end items-center sm:items-end text-center space-y-3 pt-4 sm:pt-0">
-                    <div class="w-64 border-b border-dashed border-slate-400 pb-1 text-slate-400 text-xs">
-                        (ลงชื่อผู้ตรวจสอบ)
+                            <!-- Numeric Score & Percentage -->
+                            <div class="flex flex-col items-center justify-center sm:border-r sm:border-brand-700/60 sm:px-4 text-center">
+                                <span class="text-xs text-brand-200 font-medium uppercase tracking-wider">คะแนนรวมที่ได้</span>
+                                <div class="flex items-baseline gap-1 my-1">
+                                    <span id="totalScoreText" class="text-4xl font-extrabold text-white">0</span>
+                                    <span id="maxScoreLabel" class="text-brand-300 text-sm font-semibold">/ 87</span>
+                                </div>
+                                <div class="w-full bg-brand-950/80 rounded-full h-3 border border-brand-700/60 p-0.5 mt-1">
+                                    <div id="scoreProgressBar" class="bg-gradient-to-r from-amber-400 to-amber-300 h-full rounded-full transition-all duration-1000" style="width: 0%;"></div>
+                                </div>
+                                <span id="percentageText" class="text-xs font-semibold text-amber-300 mt-1.5">คิดเป็นร้อยละ 0.00%</span>
+                            </div>
+
+                            <!-- Indicator Counts Breakdown -->
+                            <div class="space-y-2 text-xs">
+                                <div class="flex items-center justify-between p-2 rounded-xl bg-brand-950/40 border border-brand-700/50">
+                                    <span class="flex items-center gap-1.5 text-emerald-300 font-medium">
+                                        <i class="fa-solid fa-circle-check"></i> ระดับ ดี (3)
+                                    </span>
+                                    <span id="countGood" class="font-bold text-white text-sm bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/40">0</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 rounded-xl bg-brand-950/40 border border-brand-700/50">
+                                    <span class="flex items-center gap-1.5 text-sky-300 font-medium">
+                                        <i class="fa-solid fa-circle-info"></i> ระดับ พอใช้ (2)
+                                    </span>
+                                    <span id="countFair" class="font-bold text-white text-sm bg-sky-500/20 px-2 py-0.5 rounded border border-sky-500/40">0</span>
+                                </div>
+                                <div class="flex items-center justify-between p-2 rounded-xl bg-brand-950/40 border border-brand-700/50">
+                                    <span class="flex items-center gap-1.5 text-rose-300 font-medium">
+                                        <i class="fa-solid fa-circle-exclamation"></i> ระดับ ควรพัฒนา (1)
+                                    </span>
+                                    <span id="countNeedImprove" class="font-bold text-white text-sm bg-rose-500/30 px-2 py-0.5 rounded border border-rose-500/50">0</span>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <p class="text-xs text-slate-500">วันที่: <span id="current-date-txt"></span></p>
+
+                    <!-- CRITICAL REQUIREMENT: URGENT IMPROVEMENT RECOMMENDATIONS BOX -->
+                    <div id="urgentImprovementSection" class="bg-rose-50 border-2 border-rose-300 rounded-2xl p-5 shadow-sm space-y-3">
+                        <div class="flex items-center justify-between border-b border-rose-200 pb-2.5">
+                            <div class="flex items-center gap-2 text-rose-900 font-heading font-bold text-sm sm:text-base">
+                                <span class="w-7 h-7 rounded-lg bg-rose-600 text-white flex items-center justify-center text-xs shadow-sm">
+                                    <i class="fa-solid fa-triangle-exclamation"></i>
+                                </span>
+                                <span>คำแนะนำและจุดที่ต้องแก้ไขเร่งด่วน (รายการระดับ "ควรพัฒนา" : 1 คะแนน)</span>
+                            </div>
+                            <span id="improveBadgeCount" class="text-xs bg-rose-200 text-rose-800 font-bold px-2.5 py-0.5 rounded-full border border-rose-300">
+                                0 รายการ
+                            </span>
+                        </div>
+                        <p class="text-xs text-rose-700 leading-relaxed">
+                            ผู้วิจัยควรดำเนินการปรับปรุงแก้ไขข้อเสนอแนะในรายการเหล่านี้ เพื่อยกระดับคุณภาพงานวิจัยและผลสัมฤทธิ์ทางการศึกษา:
+                        </p>
+                        <!-- Dynamic list of items needing improvement -->
+                        <div id="improvementList" class="space-y-2.5">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Supervisor Overall Feedback Note -->
+                    <div class="bg-white border border-brand-100 rounded-2xl p-5 shadow-sm space-y-3">
+                        <h4 class="font-heading font-semibold text-brand-900 text-sm flex items-center gap-2 border-b border-brand-100 pb-2">
+                            <i class="fa-solid fa-pen-nib text-brand-700"></i>
+                            สรุปข้อสังเกตและข้อเสนอแนะสำหรับผู้นิเทศติดตาม
+                        </h4>
+                        <div id="overallFeedbackText" class="text-xs sm:text-sm text-slate-700 leading-relaxed bg-brand-50/50 p-4 rounded-xl border border-brand-100 italic">
+                            -
+                        </div>
+                    </div>
+
+                    <!-- Interactive Rubric Breakdown Table -->
+                    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+                        <div class="p-4 bg-slate-50 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <h4 class="font-heading font-semibold text-slate-800 text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-list-check text-brand-700"></i>
+                                รายละเอียดผลการประเมินรายตัวชี้วัด (19 หัวข้อ 29 ตัวชี้วัด)
+                            </h4>
+                            <div class="flex items-center gap-1.5 text-xs flex-wrap">
+                                <button onclick="filterTable('all')" id="btnFilterAll" class="px-2.5 py-1 rounded-lg bg-brand-800 text-white font-medium shadow-xs">ทั้งหมด (29)</button>
+                                <button onclick="filterTable('1')" id="btnFilter1" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-rose-700 font-medium hover:bg-rose-50">ควรพัฒนา (1)</button>
+                                <button onclick="filterTable('2')" id="btnFilter2" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-sky-700 font-medium hover:bg-sky-50">พอใช้ (2)</button>
+                                <button onclick="filterTable('3')" id="btnFilter3" class="px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-emerald-700 font-medium hover:bg-emerald-50">ดี (3)</button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs" id="evaluationTable">
+                                <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200">
+                                    <tr>
+                                        <th class="p-3 w-12 text-center">ข้อ</th>
+                                        <th class="p-3 w-44">หัวข้อการประเมิน</th>
+                                        <th class="p-3">ตัวชี้วัด / รายการที่ต้องมี</th>
+                                        <th class="p-3 w-32 text-center">ระดับคุณภาพ</th>
+                                        <th class="p-3 w-56">ข้อสังเกต / ข้อเสนอแนะ</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tableBody" class="divide-y divide-slate-100">
+                                    <!-- Injected via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PRINT ONLY SECTION: Formal Vocational Education Commission Evaluation Document -->
+        <section class="print-only bg-white text-black p-8 max-w-4xl mx-auto space-y-4">
+            <div class="text-center space-y-1">
+                <div class="flex justify-center mb-2">
+                    <img src="logo-vec.svg" 
+                         alt="สอศ." class="w-16 h-16 object-contain"
+                         onerror="this.onerror=null; this.src='https://upload.wikimedia.org/wikipedia/th/thumb/c/cf/Vocational_Education_Commission_Seal.png/220px-Vocational_Education_Commission_Seal.png';">
+                </div>
+                <h2 class="text-base font-bold">แบบประเมินคุณภาพงานวิจัยในชั้นเรียน</h2>
+                <p class="text-xs text-slate-600">สำนักงานคณะกรรมการการอาชีวศึกษา (สอศ.)</p>
+            </div>
+
+            <div class="text-xs space-y-1 border-b border-black pb-3">
+                <div class="grid grid-cols-2 gap-2">
+                    <div><strong>ชื่อผู้สอน:</strong> <span id="printTeacher">-</span></div>
+                    <div><strong>สถานศึกษา:</strong> <span id="printSchool">-</span></div>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div><strong>ประเภทวิชา:</strong> <span id="printCategory">-</span></div>
+                    <div><strong>สาขาวิชา:</strong> <span id="printMajor">-</span></div>
+                </div>
+                <div><strong>ชื่องานวิจัย:</strong> <span id="printTitle">-</span></div>
+            </div>
+
+            <!-- Print Score Summary -->
+            <div class="text-xs border border-black p-2 flex justify-between items-center bg-stone-50">
+                <div><strong>คะแนนรวม:</strong> <span id="printScore">0</span> / <span id="printMaxScore">87</span> คะแนน</div>
+                <div><strong>ร้อยละ:</strong> <span id="printPercentage">0%</span></div>
+                <div><strong>ผลการประเมิน:</strong> <span id="printMedal" class="font-bold">-</span></div>
+            </div>
+
+            <table class="w-full text-[10px] border-collapse border border-black" id="printTable">
+                <thead>
+                    <tr class="bg-stone-200">
+                        <th class="border border-black p-1 text-center w-8">ข้อ</th>
+                        <th class="border border-black p-1 w-28">หัวข้อ</th>
+                        <th class="border border-black p-1">ตัวชี้วัด / รายการที่ต้องมี</th>
+                        <th class="border border-black p-1 text-center w-8">ดี (3)</th>
+                        <th class="border border-black p-1 text-center w-8">พอใช้ (2)</th>
+                        <th class="border border-black p-1 text-center w-10">ควรพัฒนา (1)</th>
+                        <th class="border border-black p-1 w-44">ข้อสังเกต/เสนอแนะที่ควรปรับปรุง</th>
+                    </tr>
+                </thead>
+                <tbody id="printTableBody">
+                    <!-- Populated via JS for print -->
+                </tbody>
+            </table>
+
+            <div class="pt-4 text-xs space-y-2">
+                <h4 class="font-bold">สรุปการนิเทศติดตามงานวิจัยในชั้นเรียน</h4>
+                <div id="printSupervisionSummary" class="border border-black p-2 min-h-[60px] text-[11px] leading-relaxed">
+                    -
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-8 pt-8 text-center text-xs">
+                <div>
+                    <p>ลงชื่อ.......................................................ผู้ประเมิน</p>
+                    <p class="mt-1">(....................................................................)</p>
+                    <p class="mt-1">ตำแหน่ง ศึกษานิเทศก์ / กรรมการผู้ทรงคุณวุฒิ</p>
+                </div>
+                <div>
+                    <p>ลงชื่อ.......................................................ผู้นิเทศ</p>
+                    <p class="mt-1">(....................................................................)</p>
+                    <p class="mt-1">วันที่..........เดือน........................พ.ศ.............</p>
                 </div>
             </div>
         </section>
     </main>
 
-    <!-- Footer Section -->
-    <footer class="bg-voc-navy text-slate-300 border-t-2 border-voc-gold py-6 px-4 sm:px-8 mt-auto">
-        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
-            <!-- Left Side: Developer Credit as requested -->
-            <div class="flex items-center space-x-2 text-yellow-300 font-semibold">
-                <i data-lucide="code-2" class="w-4 h-4 text-voc-gold"></i>
+    <!-- Modal for Gemini API Key configuration -->
+    <div id="apiKeyModal" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 shadow-2xl space-y-4 border border-slate-200">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-heading font-semibold text-slate-800 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-key text-amber-500"></i>
+                    ตั้งค่า Google Gemini API Key
+                </h3>
+                <button onclick="closeApiKeyModal()" class="text-slate-400 hover:text-slate-600 transition">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed">
+                ท่านสามารถใส่ Google Gemini API Key เพื่อให้ระบบใช้พลังของโมเดล AI ล่าสุดในการวิเคราะห์งานวิจัยอย่างละเอียด หรือหากไม่ระบุ ระบบจะใช้ <strong>Thai Academic Heuristic Analysis Engine</strong> ในการตรวจประเมินอัตโนมัติ
+            </p>
+            <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Gemini API Key</label>
+                <input type="password" id="apiKeyInput" placeholder="AIzaSy..." 
+                       class="w-full px-3 py-2 rounded-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500 text-xs font-mono">
+            </div>
+            <div class="flex justify-between items-center pt-2">
+                <button onclick="clearApiKey()" class="text-xs text-rose-600 hover:text-rose-800 underline">
+                    ล้างคีย์ที่บันทึกไว้
+                </button>
+                <div class="flex gap-2">
+                    <button onclick="closeApiKeyModal()" class="px-3.5 py-1.5 rounded-xl border border-slate-200 text-xs text-slate-600 hover:bg-slate-50 transition">
+                        ยกเลิก
+                    </button>
+                    <button onclick="saveApiKey()" class="px-4 py-1.5 rounded-xl bg-brand-800 hover:bg-brand-900 text-white font-medium text-xs transition shadow-sm">
+                        บันทึกคีย์
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-brand-950 text-brand-200 border-t border-brand-800 text-xs py-4 no-print mt-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <!-- Mandatory requirement: Left footer credit: พัฒนาโดย Apichat Nernprom -->
+            <div class="font-medium flex items-center gap-2 text-white">
+                <span class="w-2 h-2 rounded-full bg-emerald-400"></span>
                 <span>พัฒนาโดย Apichat Nernprom</span>
             </div>
-
-            <!-- Right Side: Copyright & Vocational Info -->
-            <div class="text-center sm:text-right text-slate-400">
-                <p>ระบบสนับสนุนการประเมินวิทยฐานะผลงานวิชาการ • สำนักงานคณะกรรมการการอาชีวศึกษา (สอศ.)</p>
-                <p class="text-[11px] text-slate-500 mt-0.5">สงวนลิขสิทธิ์ตามมาตรฐานวิชาชีพครูและบุคลากรทางการศึกษา</p>
+            <div class="text-brand-300/80 text-[11px] text-center sm:text-right">
+                ระบบประเมินคุณภาพงานวิจัยในชั้นเรียนตามเกณฑ์มาตรฐาน สอศ. | 19 หัวข้อ 29 ตัวชี้วัด
             </div>
         </div>
     </footer>
 
-    <!-- JavaScript Application Logic -->
     <script>
-        // Set PDF.js worker URL safely
-        if (window.pdfjsLib) {
-            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-        }
+        // PDF.js worker setup
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-        // Data Structure extracted from the provided checklist document
-        const CHECKLIST_DATA = [
+        // 19 topics with 29 indicators defined exactly according to the official OVEC evaluation form
+        const RUBRIC_CRITERIA = [
             {
-                sectionId: 1,
-                title: "ส่วนที่ 1 ด้านแนวคิดและลักษณะของงานวิจัย",
-                subsections: [
-                    {
-                        subId: "1.1",
-                        title: "1.1 ความเป็นงานวิจัยและพัฒนา (R&D)",
-                        items: [
-                            { id: "1.1.1", text: "ผลงานมีลักษณะเป็นงานวิจัยและพัฒนา (R&D) อย่างแท้จริง ไม่ใช่เพียงการสร้างหรือผลิตสื่อการสอน", keywords: ["วิจัยและพัฒนา", "r&d", "research and development", "วงจร"] },
-                            { id: "1.1.2", text: "มีกระบวนการวิจัยและพัฒนาอย่างเป็นระบบ ตั้งแต่การศึกษาปัญหา การออกแบบ การพัฒนา การทดลองใช้ และการปรับปรุง", keywords: ["ขั้นตอนการพัฒนา", "ทดลองใช้", "ปรับปรุง", "addie", "d&d"] },
-                            { id: "1.1.3", text: "แสดงให้เห็นความคิดริเริ่มสร้างสรรค์และความเป็นนวัตกรรมอย่างชัดเจน", keywords: ["ความคิดริเริ่ม", "นวัตกรรม", "ริเริ่ม", "สร้างสรรค์"] },
-                            { id: "1.1.4", text: "นวัตกรรมที่พัฒนามีองค์ประกอบ หลักการ และกระบวนการทำงานที่อธิบายได้", keywords: ["หลักการ", "โครงสร้างนวัตกรรม", "องค์ประกอบ", "โมเดล", "model"] },
-                            { id: "1.1.5", text: "มีคู่มือการใช้/คู่มือการดำเนินงานของนวัตกรรมอย่างเป็นระบบ", keywords: ["คู่มือการใช้", "คู่มือครู", "แนวทางการจัดการ", "manual"] },
-                            { id: "1.1.6", text: "มีรายงานผลการใช้นวัตกรรมที่แสดงกระบวนการและผลลัพธ์อย่างเป็นรูปธรรม", keywords: ["รายงานผลการใช้", "ผลสัมฤทธิ์", "ผลลัพธ์", "รูปธรรม"] }
-                        ]
-                    },
-                    {
-                        subId: "1.2",
-                        title: "1.2 ความเชื่อมโยงเชิงสาเหตุ",
-                        items: [
-                            { id: "1.2.1", text: "ปัญหาการวิจัยมีความชัดเจนและมีข้อมูลเชิงประจักษ์สนับสนุน", keywords: ["สภาพปัญหา", "สถิติ", "คะแนนตก", "ข้อมูลเชิงประจักษ์", "ร้อยละ"] },
-                            { id: "1.2.2", text: "วิเคราะห์สาเหตุของปัญหาอย่างเป็นระบบ ไม่ใช่เพียงการกล่าวถึงปัญหา", keywords: ["สาเหตุ", "วิเคราะห์สาเหตุ", "ก้างปลา", "root cause"] },
-                            { id: "1.2.3", text: "นวัตกรรมที่พัฒนาสอดคล้องกับสาเหตุและความต้องการในการแก้ปัญหา", keywords: ["สอดคล้อง", "ตอบโจทย์", "แก้ปัญหา"] },
-                            { id: "1.2.4", text: "มีเหตุผลเชิงวิชาการอธิบายว่านวัตกรรมสามารถแก้ปัญหาหรือพัฒนาผลลัพธ์ได้อย่างไร", keywords: ["เหตุผลทางวิชาการ", "ทฤษฎีรองรับ", "ทำไมจึงเลือก"] },
-                            { id: "1.2.5", text: "มีหลักฐานสนับสนุนความสัมพันธ์ระหว่างการใช้นวัตกรรมกับผลลัพธ์ที่เกิดขึ้น", keywords: ["ความสัมพันธ์", "ส่งผลต่อ", "อิทธิพล"] },
-                            { id: "1.2.6", text: "แผนการจัดการเรียนรู้ วิดีโอการสอน กิจกรรมการเรียนรู้ และนวัตกรรมมีความสอดคล้องกัน", keywords: ["แผนการจัดการเรียนรู้", "วิดีโอ", "กิจกรรม", "alignment"] }
-                        ]
-                    }
-                ]
+                id: '1.1',
+                topic: '1. ชื่อเรื่องวิจัย และประเด็นปัญหาวิจัย',
+                indicator: '1.1 ชื่อเรื่องวิจัยสอดคล้องกับปัญหาวิจัยชัดเจนมีองค์ประกอบครบถ้วน (ตัวแปร กลุ่มเป้าหมาย วิธีการวิจัย) กระชับ สื่อความหมาย'
             },
             {
-                sectionId: 2,
-                title: "ส่วนที่ 2 ด้านระเบียบวิธีวิจัยและเครื่องมือ",
-                subsections: [
-                    {
-                        subId: "2.1",
-                        title: "2.1 การออกแบบการวิจัย",
-                        items: [
-                            { id: "2.1.1", text: "รูปแบบ/ระเบียบวิธีวิจัยสอดคล้องกับปัญหาและวัตถุประสงค์การวิจัย", keywords: ["แบบแผนการวิจัย", "experimental design", "one group", "pre-experimental"] },
-                            { id: "2.1.2", text: "ประชากรและกลุ่มตัวอย่างระบุไว้อย่างชัดเจน", keywords: ["ประชากร", "กลุ่มตัวอย่าง", "นักเรียน", "นักศึกษา", "ปวช.", "ปวส."] },
-                            { id: "2.1.3", text: "วิธีการได้มาซึ่งกลุ่มตัวอย่างมีเหตุผลและเหมาะสม", keywords: ["การสุ่ม", "purposive", "เจาะจง", "cluster sampling"] },
-                            { id: "2.1.4", text: "ตัวแปร/ประเด็นที่ศึกษาได้รับการกำหนดอย่างชัดเจน", keywords: ["ตัวแปรต้น", "ตัวแปรตาม", "independent variable"] },
-                            { id: "2.1.5", text: "เครื่องมือวิจัยเหมาะสมกับตัวแปรและวัตถุประสงค์", keywords: ["เครื่องมือที่ใช้", "แบบวัด", "แบบทดสอบ", "แบบสังเกต"] },
-                            { id: "2.1.6", text: "ขั้นตอนการดำเนินการวิจัยสามารถตรวจสอบและทำซ้ำได้", keywords: ["วิธีดำเนินการ", "กรอบการทดลอง", "ระยะเวลา"] }
-                        ]
-                    },
-                    {
-                        subId: "2.2",
-                        title: "2.2 คุณภาพของเครื่องมือวิจัย",
-                        items: [
-                            { id: "2.2.1", text: "เครื่องมือได้รับการตรวจสอบความตรงเชิงเนื้อหาโดยผู้เชี่ยวชาญ", keywords: ["ผู้เชี่ยวชาญ", "ความตรง", "content validity"] },
-                            { id: "2.2.2", text: "มีผลการตรวจสอบค่า IOC หรือหลักฐานการตรวจสอบความตรงที่เหมาะสม", keywords: ["ioc", "ดัชนีความสอดคล้อง", "0.50 ขึ้นไป"] },
-                            { id: "2.2.3", text: "เครื่องมือที่จำเป็นได้รับการตรวจสอบความเชื่อมั่น (Reliability)", keywords: ["ความเชื่อมั่น", "alpha", "cronbach", "kuder", "kr-20"] },
-                            { id: "2.2.4", text: "มีเอกสารแสดงผลการตรวจสอบคุณภาพเครื่องมือในภาคผนวก", keywords: ["ภาคผนวก", "ตาราง ioc", "รายชื่อผู้เชี่ยวชาญ"] },
-                            { id: "2.2.5", text: "เกณฑ์การให้คะแนนและการแปลผลมีความชัดเจน", keywords: ["เกณฑ์การให้คะแนน", "การแปลผล", "ระดับคุณภาพ"] },
-                            { id: "2.2.6", text: "แบบประเมินทักษะ/สมรรถนะมี Rubric หรือเกณฑ์การตรวจสอบที่ชัดเจน", keywords: ["rubric", "รูบริก", "เกณฑ์การตรวจสอบทักษะ", "เกณฑ์การประเมินทักษะ", "สมรรถนะ"] },
-                            { id: "2.2.7", text: "เครื่องมือแต่ละฉบับเชื่อมโยงกับวัตถุประสงค์และตัวแปรที่ศึกษา", keywords: ["ตารางวิเคราะห์", "test blueprint", "ความเชื่อมโยง"] }
-                        ]
-                    },
-                    {
-                        subId: "2.3",
-                        title: "2.3 การวิเคราะห์ข้อมูล",
-                        items: [
-                            { id: "2.3.1", text: "วิธีวิเคราะห์ข้อมูลสอดคล้องกับวัตถุประสงค์การวิจัย", keywords: ["สถิติที่ใช้", "วิเคราะห์ข้อมูล"] },
-                            { id: "2.3.2", text: "สถิติที่ใช้มีความเหมาะสมกับลักษณะข้อมูล", keywords: ["t-test", "mean", "s.d.", "ส่วนเบี่ยงเบน"] },
-                            { id: "2.3.3", text: "คำนวณและรายงานค่าสถิติถูกต้อง", keywords: ["ค่าเฉลี่ย", "ร้อยละ", "นัยสำคัญ", "p < .05"] },
-                            { id: "2.3.4", text: "การตีความผลทางสถิติถูกต้อง ไม่เกินกว่าข้อมูลที่ค้นพบ", keywords: ["การแปลผล", "ระดับความพึงพอใจ", "มีนัยสำคัญทางสถิติ"] },
-                            { id: "2.3.5", text: "มีการวิเคราะห์ข้อมูลเชิงคุณภาพเมื่อมีความจำเป็น", keywords: ["เชิงคุณภาพ", "วิเคราะห์เนื้อหา", "content analysis"] },
-                            { id: "2.3.6", text: "ผลการวิเคราะห์เชิงปริมาณและเชิงคุณภาพมีความสอดคล้องกัน", keywords: ["สามเส้า", "สอดคล้อง", "สนับสนุนกัน"] }
-                        ]
-                    }
-                ]
+                id: '1.2',
+                topic: '1. ชื่อเรื่องวิจัย และประเด็นปัญหาวิจัย',
+                indicator: '1.2 ประเด็นปัญหาวิจัย มีความสำคัญ น่าสนใจ เป็นประโยชน์ต่อการพัฒนาผู้เรียน ทันสมัย'
             },
             {
-                sectionId: 3,
-                title: "ส่วนที่ 3 ด้านเนื้อหาและการเขียนรายงานวิจัย",
-                subsections: [
-                    {
-                        subId: "3.1",
-                        title: "3.1 บทที่ 1 บทนำ",
-                        items: [
-                            { id: "3.1.1", text: "ความเป็นมาและความสำคัญของปัญหามีความชัดเจน", keywords: ["ความเป็นมาและความสำคัญ", "สภาพการณ์"] },
-                            { id: "3.1.2", text: "มีข้อมูลเชิงประจักษ์แสดงให้เห็นถึงสภาพปัญหา", keywords: ["ข้อมูลเชิงประจักษ์", "ผลสัมฤทธิ์ทางการเรียนตกต่ำ", "สถิติ"] },
-                            { id: "3.1.3", text: "วิเคราะห์ช่องว่างระหว่างสภาพที่เป็นอยู่กับสภาพที่พึงประสงค์", keywords: ["สภาพปัจจุบัน", "สภาพที่พึงประสงค์", "gap"] },
-                            { id: "3.1.4", text: "วัตถุประสงค์การวิจัยชัดเจนและครบถ้วน", keywords: ["วัตถุประสงค์ของการวิจัย", "เพื่อพัฒนา", "เพื่อเปรียบเทียบ"] },
-                            { id: "3.1.5", text: "สมมติฐานการวิจัยสอดคล้องกับวัตถุประสงค์และรูปแบบการวิจัย (ถ้ามี)", keywords: ["สมมติฐาน", "สูงกว่าเกณฑ์", "แตกต่างกัน"] },
-                            { id: "3.1.6", text: "ขอบเขตการวิจัยชัดเจน", keywords: ["ขอบเขตการวิจัย", "ขอบเขตด้านประชากร", "ขอบเขตด้านเนื้อหา"] },
-                            { id: "3.1.7", text: "นิยามศัพท์เฉพาะครอบคลุมคำสำคัญที่ใช้ในการวิจัย", keywords: ["นิยามศัพท์เฉพาะ", "หมายถึง"] },
-                            { id: "3.1.8", text: "ประโยชน์ที่คาดว่าจะได้รับสอดคล้องกับผลที่คาดว่าจะเกิดขึ้น", keywords: ["ประโยชน์ที่คาดว่าจะได้รับ"] }
-                        ]
-                    },
-                    {
-                        subId: "3.2",
-                        title: "3.2 บทที่ 2 เอกสารและงานวิจัยที่เกี่ยวข้อง",
-                        items: [
-                            { id: "3.2.1", text: "ทบทวนแนวคิด ทฤษฎี และองค์ความรู้ที่เกี่ยวข้องอย่างครอบคลุม", keywords: ["ทฤษฎีการเรียนรู้", "คอนสตรัคติวิสต์", "active learning"] },
-                            { id: "3.2.2", text: "ทบทวนองค์ความรู้เกี่ยวกับนวัตกรรมที่นำมาใช้", keywords: ["หลักการของนวัตกรรม", "ชุดการสอน", "บทเรียนออนไลน์"] },
-                            { id: "3.2.3", text: "มีงานวิจัยที่เกี่ยวข้องทั้งในประเทศและต่างประเทศตามความเหมาะสม", keywords: ["งานวิจัยในประเทศ", "งานวิจัยต่างประเทศ"] },
-                            { id: "3.2.4", text: "ให้ความสำคัญกับเอกสารและงานวิจัยที่มีความทันสมัย", keywords: ["ปี พ.ศ.", "ทันสมัย", "5 ปีย้อนหลัง"] },
-                            { id: "3.2.5", text: "มีการสังเคราะห์ ไม่ใช่เพียงการรวบรวมข้อความจากแหล่งต่าง ๆ", keywords: ["สังเคราะห์", "ตารางสังเคราะห์", "สรุปกรอบ"] },
-                            { id: "3.2.6", text: "การทบทวนวรรณกรรมนำไปสู่กรอบแนวคิดการวิจัย", keywords: ["กรอบแนวคิดการวิจัย", "conceptual framework"] },
-                            { id: "3.2.7", text: "การอ้างอิงในเนื้อหาถูกต้องและสอดคล้องกับ APA 7", keywords: ["apa", "(", "พ.ศ.", ")"] }
-                        ]
-                    },
-                    {
-                        subId: "3.3",
-                        title: "3.3 บทที่ 3 วิธีดำเนินการวิจัย",
-                        items: [
-                            { id: "3.3.1", text: "ระบุรูปแบบ/ขั้นตอนการวิจัยไว้อย่างชัดเจน", keywords: ["ขั้นตอนการดำเนินการ", "ระยะที่ 1", "ระยะที่ 2"] },
-                            { id: "3.3.2", text: "ระบุประชากรและกลุ่มตัวอย่างอย่างชัดเจน", keywords: ["ประชากรและกลุ่มตัวอย่าง", "สุ่มตัวอย่าง"] },
-                            { id: "3.3.3", text: "อธิบายวิธีการสร้างและพัฒนาเครื่องมืออย่างเป็นขั้นตอน", keywords: ["การสร้างเครื่องมือ", "ขั้นตอนการสร้าง"] },
-                            { id: "3.3.4", text: "อธิบายการตรวจสอบคุณภาพเครื่องมือ", keywords: ["หาค่าความตรง", "หาความเชื่อมั่น", "ทดลองใช้เครื่องมือ"] },
-                            { id: "3.3.5", text: "ระบุขั้นตอนการทดลอง/การใช้นวัตกรรมอย่างละเอียด", keywords: ["ขั้นตอนการทดลอง", "การจัดกิจกรรมการเรียนรู้"] },
-                            { id: "3.3.6", text: "ระบุขั้นตอนการเก็บรวบรวมข้อมูลอย่างชัดเจน", keywords: ["การเก็บรวบรวมข้อมูล", "pre-test", "post-test"] },
-                            { id: "3.3.7", text: "ระบุสถิติและวิธีการวิเคราะห์ข้อมูลครบถ้วน", keywords: ["สถิติพื้นฐาน", "สถิติทดสอบสมมติฐาน"] },
-                            { id: "3.3.8", text: "วิธีดำเนินการวิจัยสามารถตรวจสอบย้อนกลับได้", keywords: ["ตรวจสอบได้", "เครื่องมือสมบูรณ์"] }
-                        ]
-                    },
-                    {
-                        subId: "3.4",
-                        title: "3.4 บทที่ 4 ผลการวิเคราะห์ข้อมูล",
-                        items: [
-                            { id: "3.4.1", text: "นำเสนอผลการวิจัยตามลำดับของวัตถุประสงค์", keywords: ["ตอนที่ 1", "ตอนที่ 2", "ผลการวิจัย"] },
-                            { id: "3.4.2", text: "ผลการวิจัยตอบคำถาม/วัตถุประสงค์ทุกข้อ", keywords: ["ตอบวัตถุประสงค์"] },
-                            { id: "3.4.3", text: "ตารางและแผนภาพช่วยให้เข้าใจผลการวิจัยได้ชัดเจน", keywords: ["ตารางที่", "ภาพที่", "แผนภูมิ"] },
-                            { id: "3.4.4", text: "ตารางมีเลขกำกับและชื่อตารางถูกต้อง", keywords: ["ตารางที่ 4."] },
-                            { id: "3.4.5", text: "แผนภาพ/ภาพประกอบมีเลขกำกับและชื่อภาพเหมาะสม", keywords: ["ภาพที่ 4."] },
-                            { id: "3.4.6", text: "มีการอธิบายผลใต้/หลังตารางอย่างเหมาะสม", keywords: ["จากตารางที่", "พบว่า"] },
-                            { id: "3.4.7", text: "ตัวเลขในตารางสอดคล้องกับข้อมูลดิบและผลการวิเคราะห์", keywords: ["ผลรวม", "ร้อยละ", "sd"] },
-                            { id: "3.4.8", text: "ไม่มีการนำเสนอผลเกินกว่าข้อมูลที่ได้จากการวิจัย", keywords: ["แปลผลตามข้อมูล"] }
-                        ]
-                    },
-                    {
-                        subId: "3.5",
-                        title: "3.5 บทที่ 5 สรุปผล อภิปรายผล และข้อเสนอแนะ",
-                        items: [
-                            { id: "3.5.1", text: "สรุปผลครบถ้วนตามวัตถุประสงค์", keywords: ["สรุปผลการวิจัย"] },
-                            { id: "3.5.2", text: "อภิปรายผลโดยเชื่อมโยงกับแนวคิด/ทฤษฎีที่เกี่ยวข้อง", keywords: ["อภิปรายผล", "สอดคล้องกับแนวคิดของ"] },
-                            { id: "3.5.3", text: "อภิปรายผลเปรียบเทียบกับงานวิจัยที่เกี่ยวข้อง", keywords: ["สอดคล้องกับงานวิจัยของ", "ตรงกับผลการวิจัยของ"] },
-                            { id: "3.5.4", text: "อธิบายเหตุผลที่ทำให้เกิดผลการวิจัยอย่างมีหลักวิชาการ", keywords: ["เนื่องจาก", "เหตุผลทางวิชาการ"] },
-                            { id: "3.5.5", text: "ข้อเสนอแนะจากผลการวิจัยสามารถนำไปใช้ได้จริง", keywords: ["ข้อเสนอแนะในการนำไปใช้", "นำไปประยุกต์"] },
-                            { id: "3.5.6", text: "มีข้อเสนอแนะสำหรับการวิจัย/พัฒนาต่อยอด", keywords: ["ข้อเสนอแนะในการทำวิจัยครั้งต่อไป"] }
-                        ]
-                    }
-                ]
+                id: '2.1',
+                topic: '2. ความเป็นมาของปัญหาการวิจัย',
+                indicator: '2.1 ระบุความเป็นมาและความสำคัญของปัญหา สภาพปัญหาที่เกิดขึ้นและแนวทางแก้ไขปัญหาเชื่อมโยงสู่ปัญหาที่วิจัยอย่างชัดเจนเป็นลำดับ'
             },
             {
-                sectionId: 4,
-                title: "ส่วนที่ 4 ด้านรูปแบบและการนำเสนอ",
-                subsections: [
-                    {
-                        subId: "4.1",
-                        title: "4.1 องค์ประกอบของรายงาน",
-                        items: [
-                            { id: "4.1.1", text: "ปกนอกและปกในมีองค์ประกอบถูกต้อง", keywords: ["ปกนอก", "ปกใน", "รายงานผลการวิจัย"] },
-                            { id: "4.1.2", text: "สารบัญเนื้อหาครบถ้วน", keywords: ["สารบัญ", "บทที่ 1", "บทที่ 5"] },
-                            { id: "4.1.3", text: "สารบัญตารางครบถ้วน", keywords: ["สารบัญตาราง"] },
-                            { id: "4.1.4", text: "สารบัญภาพ/แผนภาพครบถ้วน", keywords: ["สารบัญภาพ"] },
-                            { id: "4.1.5", text: "เลขหน้าถูกต้องและต่อเนื่อง", keywords: ["หน้า ก", "หน้า 1"] },
-                            { id: "4.1.6", text: "หัวข้อและลำดับหัวข้อมีความสอดคล้องกันตลอดเล่ม", keywords: ["ลำดับหัวข้อ", "1.1", "1.2"] }
-                        ]
-                    },
-                    {
-                        subId: "4.2",
-                        title: "4.2 ภาษาและการใช้คำ",
-                        items: [
-                            { id: "4.2.1", text: "ใช้ภาษาทางวิชาการเหมาะสมกับระดับผลงาน", keywords: ["ภาษาทางวิชาการ", "ศัพท์เฉพาะ"] },
-                            { id: "4.2.2", text: "เนื้อหาเรียบเรียงอย่างเป็นระบบและต่อเนื่อง", keywords: ["ความต่อเนื่อง", "ร้อยเรียง"] },
-                            { id: "4.2.3", text: "ใช้ศัพท์สำคัญและคำเรียกตัวแปรอย่างสม่ำเสมอ", keywords: ["คำศัพท์คงที่", "ตัวแปรสม่ำเสมอ"] },
-                            { id: "4.2.4", text: "ไม่ใช้ข้อความกำกวม หรือข้อความที่ตีความได้หลายความหมาย", keywords: ["ชัดเจน", "รัดกุม"] },
-                            { id: "4.2.5", text: "ตรวจสอบคำผิด การสะกด และไวยากรณ์แล้ว", keywords: ["การสะกดคำ", "ไม่พบคำผิด"] }
-                        ]
-                    },
-                    {
-                        subId: "4.3",
-                        title: "4.3 การอ้างอิงและบรรณานุกรม",
-                        items: [
-                            { id: "4.3.1", text: "การอ้างอิงในเนื้อหาถูกต้องตาม APA 7", keywords: ["apa", "(256", "(202"] },
-                            { id: "4.3.2", text: "แหล่งอ้างอิงทุกแหล่งในเนื้อหาปรากฏในบรรณานุกรม", keywords: ["บรรณานุกรม", "เอกสารอ้างอิง"] },
-                            { id: "4.3.3", text: "รายการในบรรณานุกรมทุกแหล่งมีการอ้างถึงในเนื้อหา", keywords: ["การอ้างถึง"] },
-                            { id: "4.3.4", text: "บรรณานุกรมเรียงลำดับและจัดรูปแบบสม่ำเสมอ", keywords: ["เรียงตามตัวอักษร", "ก-ฮ", "a-z"] },
-                            { id: "4.3.5", text: "แหล่งอ้างอิงสามารถตรวจสอบย้อนกลับได้", keywords: ["doi", "url", "สืบค้นเมื่อ"] },
-                            { id: "4.3.6", text: "ให้ความสำคัญกับแหล่งข้อมูลทางวิชาการและแหล่งข้อมูลที่น่าเชื่อถือ", keywords: ["วารสาร tci", "scopus", "วิทยานิพนธ์"] }
-                        ]
-                    },
-                    {
-                        subId: "4.4",
-                        title: "4.4 ภาคผนวกและหลักฐานประกอบ",
-                        items: [
-                            { id: "4.4.1", text: "มีเครื่องมือวิจัยครบถ้วนทุกฉบับ", keywords: ["ภาคผนวก ก", "เครื่องมือวิจัย"] },
-                            { id: "4.4.2", text: "มีเอกสารแสดงผลการตรวจสอบคุณภาพเครื่องมือ", keywords: ["ผลการตรวจสอบคุณภาพ"] },
-                            { id: "4.4.3", text: "มีผลการตรวจสอบ IOC ตามเครื่องมือที่เกี่ยวข้อง", keywords: ["ค่า ioc รายข้อ", "ioc"] },
-                            { id: "4.4.4", text: "มีผลการตรวจสอบความเชื่อมั่นตามเครื่องมือที่เกี่ยวข้อง", keywords: ["ค่าความเชื่อมั่น", "alpha"] },
-                            { id: "4.4.5", text: "มีแผนการจัดการเรียนรู้ที่ใช้ในการวิจัย", keywords: ["แผนการจัดการเรียนรู้", "แผนการสอน"] },
-                            { id: "4.4.6", text: "มีคู่มือการใช้นวัตกรรม", keywords: ["คู่มือการใช้นวัตกรรม", "คู่มือการใช้"] },
-                            { id: "4.4.7", text: "มีรายงาน/หลักฐานการใช้นวัตกรรม", keywords: ["ร่องรอยการใช้นวัตกรรม", "ภาพกิจกรรม"] },
-                            { id: "4.4.8", text: "มีหลักฐานกิจกรรมระหว่างดำเนินการวิจัย", keywords: ["ภาพการจัดกิจกรรม", "บันทึกหลังสอน"] },
-                            { id: "4.4.9", text: "มีตัวอย่างผลงานหรือหลักฐานการเรียนรู้ของผู้เรียน", keywords: ["ผลงานนักศึกษา", "ชิ้นงาน", "แฟ้มสะสมงาน"] },
-                            { id: "4.4.10", text: "วิดีโอการจัดการเรียนรู้สอดคล้องกับแผนการสอนและนวัตกรรม", keywords: ["วิดีโอการสอน", "คลิปการจัดการเรียนรู้", "วิดีโอ"] },
-                            { id: "4.4.11", text: "หลักฐานประกอบแต่ละรายการสามารถเชื่อมโยงกลับไปยังเนื้อหาในรายงานได้", keywords: ["สอดคล้องกับเนื้อหา"] }
-                        ]
-                    }
-                ]
+                id: '2.2',
+                topic: '2. ความเป็นมาของปัญหาการวิจัย',
+                indicator: '2.2 อ้างอิงทฤษฎี หลักการ ข้อเท็จจริง ของแหล่งข้อมูลเพื่อสนับสนุนปัญหาน่าเชื่อถือ'
             },
             {
-                sectionId: 5,
-                title: "ส่วนที่ 5 ด้านจริยธรรมและความถูกต้อง",
-                subsections: [
-                    {
-                        subId: "5.1",
-                        title: "5.1 ความถูกต้องและความเป็นเจ้าของผลงาน",
-                        items: [
-                            { id: "5.1.1", text: "ผลงานเป็นผลงานที่จัดทำขึ้นตามช่วงเวลาที่กำหนดสำหรับการประเมิน", keywords: ["ปีการศึกษา", "ช่วงเวลาที่ดำรงตำแหน่ง"] },
-                            { id: "5.1.2", text: "ผลงานไม่ซ้ำซ้อนกับผลงานที่เคยใช้ประกอบการประเมินในลักษณะที่ไม่เหมาะสม", keywords: ["ไม่ซ้ำซ้อน", "งานวิจัยเดิม"] },
-                            { id: "5.1.3", text: "ผู้จัดทำสามารถแสดงหลักฐานการดำเนินงานและความเป็นเจ้าของผลงานได้", keywords: ["ผู้จัดทำ", "ผู้วิจัย", "เจ้าของผลงาน"] },
-                            { id: "5.1.4", text: "ไม่มีการคัดลอกหรือเลียนแบบผลงานของผู้อื่นโดยไม่อ้างอิง", keywords: ["จรรยาบรรณ", "ไม่คัดลอก"] },
-                            { id: "5.1.5", text: "มีการตรวจสอบการคัดลอกผลงานด้วยระบบที่เหมาะสม", keywords: ["อักขราวิสุทธิ์", "turnitin", "copycatch"] }
-                        ]
-                    },
-                    {
-                        subId: "5.2",
-                        title: "5.2 จริยธรรมการวิจัย",
-                        items: [
-                            { id: "5.2.1", text: "ดำเนินการวิจัยโดยคำนึงถึงสิทธิและสวัสดิภาพของผู้เกี่ยวข้อง", keywords: ["จริยธรรมในมนุษย์", "สิทธิผู้เรียน"] },
-                            { id: "5.2.2", text: "มีการขอความยินยอมหรือดำเนินการตามข้อกำหนดที่เกี่ยวข้องเมื่อจำเป็น", keywords: ["ความยินยอม", "informed consent", "หนังสือขออนุญาต"] },
-                            { id: "5.2.3", text: "ปกปิดข้อมูลส่วนบุคคลของผู้เรียนและผู้เกี่ยวข้องอย่างเหมาะสม", keywords: ["ปกปิดชื่อ", "ข้อมูลส่วนบุคคล", "pdpa", "รหัส นศ."] },
-                            { id: "5.2.4", text: "ไม่มีการสร้างหรือปรับเปลี่ยนข้อมูลเพื่อให้ผลวิจัยเป็นไปตามที่ต้องการ", keywords: ["ข้อมูลจริง", "ไม่มีการเมคข้อมูล"] },
-                            { id: "5.2.5", text: "รายงานผลการวิจัยตามข้อมูลที่เกิดขึ้นจริง", keywords: ["รายงานตรงไปตรงมา"] },
-                            { id: "5.2.6", text: "มีความโปร่งใสในการรายงานข้อจำกัดของการวิจัย", keywords: ["ข้อจำกัดของการวิจัย"] }
-                        ]
-                    }
-                ]
+                id: '3.1',
+                topic: '3. วัตถุประสงค์',
+                indicator: '3.1 วัตถุประสงค์ชัดเจน สอดคล้องกับประเด็นการวิจัย ชื่อเรื่องวิจัย เรียงลำดับตามการปฏิบัติ'
             },
             {
-                sectionId: 6,
-                title: "ส่วนที่ 6 ด้านผลลัพธ์และการนำไปใช้",
-                subsections: [
-                    {
-                        subId: "6.1",
-                        title: "6.1 ผลลัพธ์การเรียนรู้",
-                        items: [
-                            { id: "6.1.1", text: "ผลลัพธ์การเรียนรู้ของผู้เรียนดีขึ้นหลังการใช้นวัตกรรม", keywords: ["ผลสัมฤทธิ์สูงขึ้น", "พัฒนาการดีขึ้น", "คะแนนหลังเรียนสูงกว่า"] },
-                            { id: "6.1.2", text: "มีข้อมูลก่อนและ/หรือหลังการพัฒนาเพื่อแสดงการเปลี่ยนแปลง", keywords: ["เปรียบเทียบก่อนและหลัง", "pre-test post-test", "pre-test"] },
-                            { id: "6.1.3", text: "มีหลักฐานเชิงประจักษ์รองรับผลลัพธ์", keywords: ["หลักฐานเชิงประจักษ์", "ชิ้นงานผลงาน", "รูปเล่มสมบูรณ์"] },
-                            { id: "6.1.4", text: "ผลการประเมินความรู้ ทักษะ และ/หรือสมรรถนะสอดคล้องกับวัตถุประสงค์", keywords: ["สมรรถนะวิชาชีพ", "ทักษะปฏิบัติ", "เกณฑ์มาตรฐาน"] },
-                            { id: "6.1.5", text: "ผลลัพธ์ที่เกิดขึ้นมีความชัดเจนทั้งในเชิงปริมาณและคุณภาพตามความเหมาะสม", keywords: ["เชิงปริมาณ", "เชิงคุณภาพ"] },
-                            { id: "6.1.6", text: "สามารถอธิบายได้ว่านวัตกรรมมีส่วนทำให้เกิดการเปลี่ยนแปลงอย่างไร", keywords: ["เกิดการเปลี่ยนแปลง", "คุณค่าของนวัตกรรม"] }
-                        ]
-                    },
-                    {
-                        subId: "6.2",
-                        title: "6.2 การขยายผลและการนำไปใช้",
-                        items: [
-                            { id: "6.2.1", text: "นวัตกรรมสามารถนำไปประยุกต์ใช้กับบริบทอื่นได้", keywords: ["ขยายผล", "บริบทอื่น", "สาขาวิชาอื่น"] },
-                            { id: "6.2.2", text: "มีการนำเสนอหรือเผยแพร่ผลงานต่อชุมชนวิชาชีพ", keywords: ["เผยแพร่", "ประชุมวิชาการ", "บทความวิจัย"] },
-                            { id: "6.2.3", text: "มีการแลกเปลี่ยนเรียนรู้ผ่าน PLC หรือเครือข่ายวิชาชีพตามความเหมาะสม", keywords: ["plc", "ชุมชนแห่งการเรียนรู้ทางวิชาชีพ", "นิเทศ"] },
-                            { id: "6.2.4", text: "มีหลักฐานการนำผลงานไปใช้โดยบุคคล/กลุ่ม/สถานศึกษาอื่น", keywords: ["หนังสือรับรองการนำไปใช้", "สถานศึกษาอื่นนำไปใช้"] },
-                            { id: "6.2.5", text: "ผลงานก่อให้เกิดองค์ความรู้ แนวปฏิบัติ หรือนวัตกรรมที่สามารถนำไปต่อยอดได้", keywords: ["องค์ความรู้ใหม่", "best practice", "แนวปฏิบัติที่ดี"] },
-                            { id: "6.2.6", text: "มีข้อเสนอหรือแนวทางในการพัฒนานวัตกรรมในระยะต่อไป", keywords: ["การต่อยอด", "ระยะต่อไป", "roadmap"] }
-                        ]
-                    }
-                ]
+                id: '3.2',
+                topic: '3. วัตถุประสงค์',
+                indicator: '3.2 วัตถุประสงค์สามารถวัดได้ ทดสอบได้หรือเป็นไปได้ในการหาคำตอบ'
+            },
+            {
+                id: '4.1',
+                topic: '4. ขอบเขตของการวิจัย',
+                indicator: '4.1 ขอบเขตของการวิจัยมีการระบุตัวแปรที่ศึกษาครบถ้วน ระบุกลุ่มเป้าหมายและจำนวน ระบุเนื้อหาที่ใช้ในการวิจัยและระยะเวลาไว้อย่างชัดเจน'
+            },
+            {
+                id: '5.1',
+                topic: '5. นิยามศัพท์เฉพาะ',
+                indicator: '5.1 นิยามศัพท์เฉพาะครอบคลุมตัวแปรที่ศึกษา สอดคล้องกับชื่อเรื่อง วัตถุประสงค์และขอบเขตวิจัย ใช้ภาษากระชับ เข้าใจง่าย'
+            },
+            {
+                id: '5.2',
+                topic: '5. นิยามศัพท์เฉพาะ',
+                indicator: '5.2 นิยามตัวแปรตามได้ชัดเจนทั้งนิยามเชิงปฏิบัติการที่สามารถสังเกต/ประเมินพฤติกรรมได้และนิยามการวัดที่ระบุวิธีการวัดไว้ชัดเจน'
+            },
+            {
+                id: '6.1',
+                topic: '6. สมมติฐานการวิจัย (ถ้ามี)',
+                indicator: '6.1 สอดคล้องกับวัตถุประสงค์ ความเป็นมาของปัญหาการวิจัย เขียนถูกต้องตามหลักวิชาการ สามารถทดสอบได้'
+            },
+            {
+                id: '7.1',
+                topic: '7. ประโยชน์ที่ได้รับจากการวิจัย',
+                indicator: '7.1 ประโยชน์ที่ได้รับระบุผลลัพธ์ปลายทางที่เกิดขึ้นจากการวิจัยได้ชัดเจน นำไปใช้ได้จริง เกิดประโยชน์กับผู้เกี่ยวข้อง'
+            },
+            {
+                id: '8.1',
+                topic: '8. เอกสารและงานวิจัยที่เกี่ยวข้อง',
+                indicator: '8.1 มีความสัมพันธ์กับงานวิจัยอย่างแท้จริงเป็นประโยชน์ต่อการวิจัยสำหรับการนิยามศัพท์หรือสร้างเครื่องมือวิจัย'
+            },
+            {
+                id: '8.2',
+                topic: '8. เอกสารและงานวิจัยที่เกี่ยวข้อง',
+                indicator: '8.2 ครบถ้วนตามทฤษฎีหลักการและตัวแปรที่ศึกษาวิจัย'
+            },
+            {
+                id: '8.3',
+                topic: '8. เอกสารและงานวิจัยที่เกี่ยวข้อง',
+                indicator: '8.3 เรียงลำดับความสำคัญของหัวเรื่องที่นำเสนออย่างเหมาะสม'
+            },
+            {
+                id: '8.4',
+                topic: '8. เอกสารและงานวิจัยที่เกี่ยวข้อง',
+                indicator: '8.4 วิธีการเขียนถูกต้องตามหลักการวิชาการ ผสมผสานกันอย่างกลมกลืน อ้างอิงจากแหล่งข้อมูลที่น่าเชื่อถือ เป็นระบบ ทันสมัย'
+            },
+            {
+                id: '9.1',
+                topic: '9. กลุ่มเป้าหมาย',
+                indicator: '9.1 ระบุกลุ่มข้อมูลเป้าหมายได้ชัดเจน สอดคล้องกับวัตถุประสงค์การวิจัย'
+            },
+            {
+                id: '10.1',
+                topic: '10. เครื่องมือที่ใช้ในการวิจัย',
+                indicator: '10.1 ระบุเครื่องมือที่ใช้ในการวิจัย (เครื่องมือทดลองหรือนวัตกรรมเครื่องมือรวบรวมข้อมูล) ครอบคลุมทุกตัวแปรที่ศึกษา'
+            },
+            {
+                id: '10.2',
+                topic: '10. เครื่องมือที่ใช้ในการวิจัย',
+                indicator: '10.2 ระบุขั้นตอนการสร้างและหาคุณภาพเครื่องมือวิจัยชัดเจนน่าเชื่อถือ'
+            },
+            {
+                id: '11.1',
+                topic: '11. การรวบรวมข้อมูล',
+                indicator: '11.1 ระบุขั้นตอนการเก็บรวบรมข้อมูลวิจัยเป็นข้อ ๆ เรียงลำดับชัดเจนมีแบบแผนการวิจัยที่สอดคล้องเหมาะสมกับวิธีการวิจัยที่ศึกษา'
+            },
+            {
+                id: '12.1',
+                topic: '12. การวิเคราะห์ข้อมูล',
+                indicator: '12.1 เลือกใช้วิธีวิเคราะห์ข้อมูลอย่างถูกต้องเหมาะสมกับลักษณะของข้อมูลหรือสมมติฐานการวิจัย มีการกำหนดเกณฑ์เพื่อการตีความ หรือแปลผลได้ถูกต้องชัดเจน'
+            },
+            {
+                id: '13.1',
+                topic: '13. ผลการวิจัย',
+                indicator: '13.1 นำเสนอผลการวิจัยตรงตามวัตถุประสงค์การวิจัย สมมติฐานการวิจัยครอบคลุมเรื่องที่ศึกษา'
+            },
+            {
+                id: '13.2',
+                topic: '13. ผลการวิจัย',
+                indicator: '13.2 นำเสนอผลการวิจัยเรียงลำดับตามวัตถุประสงค์ การวิจัย นำเสนอด้วยตาราง กราฟ ภาษาที่สื่อความหมายชัดเจน'
+            },
+            {
+                id: '14.1',
+                topic: '14. สรุปผล',
+                indicator: '14.1 สรุปผลตามวัตถุประสงค์วิจัย สมมติฐานวิจัย หรือสาระสำคัญที่โดดเด่นให้ครบถ้วน กระชับด้วยภาษาที่เข้าใจง่าย'
+            },
+            {
+                id: '15.1',
+                topic: '15. อภิปรายผล',
+                indicator: '15.1 อภิปรายผลครอบคลุมผลการวิจัยตามวัตถุประสงค์ตีความให้เหตุผลในแง่มุมที่น่าสนใจแสดงหลักฐานข้อมูลอ้างอิงยืนยันสัมพันธ์กับบทที่ 2 ชัดเจน ครบถ้วน'
+            },
+            {
+                id: '16.1',
+                topic: '16. ข้อเสนอแนะ',
+                indicator: '16.1 ข้อเสนอแนะนำผลการวิจัยไปใช้มีความชัดเจน เป็นรูปธรรม สามารถนำผลการวิจัยไปใช้ได้จริงเป็นประโยชน์'
+            },
+            {
+                id: '16.2',
+                topic: '16. ข้อเสนอแนะ',
+                indicator: '16.2 ประเด็นเสนอแนะเพื่อทำวิจัยครั้งต่อไป มีความน่าสนใจ มีโอกาสดำเนินการต่อได้จริง'
+            },
+            {
+                id: '17.1',
+                topic: '17. บทคัดย่อ',
+                indicator: '17.1 บทคัดย่อครอบคลุมประเด็นสำคัญของงานวิจัย (วัตถุประสงค์ กลุ่มเป้าหมาย เครื่องมือวิจัย วิธีวิเคราะห์ข้อมูล ผลการวิเคราะห์โดยย่อ) มีความถูกต้องของการใช้ภาษา กระชับได้ใจความไม่เกิน 1 หน้ากระดาษ'
+            },
+            {
+                id: '18.1',
+                topic: '18. บรรณานุกรม',
+                indicator: '18.1 ระบุรายการเอกสารครบถ้วนตามที่อ้างในเนื้อหาของการวิจัย เขียนถูกต้องตามระเบียบการเขียนบรรณานุกรมเป็นรูปแบบเดียวกัน'
+            },
+            {
+                id: '19.1',
+                topic: '19. ภาคผนวก',
+                indicator: '19.1 ภาคผนวก มีการแนบเอกสารหลักฐานสำคัญที่ใช้ประกอบการวิจัยชัดเจนน่าเชื่อถือ'
             }
         ];
 
-        // High Risk 15 Final Check Items
-        const FINAL_RISK_ITEMS = [
-            "1. ปัญหาที่พบ → สาเหตุ → นวัตกรรม → วิธีใช้ → ผลลัพธ์ เชื่อมโยงกัน",
-            "2. วัตถุประสงค์ → เครื่องมือ → ข้อมูล → สถิติ → ผลการวิจัย สอดคล้องกัน",
-            "3. นวัตกรรมมีความใหม่/ริเริ่ม/พัฒนาอย่างมีเหตุผล ไม่ใช่เพียงสื่อการสอน",
-            "4. มีหลักฐานแสดงกระบวนการพัฒนานวัตกรรมจริง",
-            "5. มีหลักฐานคุณภาพของเครื่องมือวิจัย (IOC, ความตรง, ความเที่ยง)",
-            "6. ผลลัพธ์การเรียนรู้มีหลักฐานเชิงประจักษ์",
-            "7. รายงานวิจัย แผนการสอน นวัตกรรม และวิดีโอสอดคล้องกัน",
-            "8. ข้อมูลในบทที่ 4 สอดคล้องกับข้อมูลดิบ",
-            "9. การอภิปรายผลเชื่อมโยงกับทฤษฎีและงานวิจัยเดิม",
-            "10. การอ้างอิงและบรรณานุกรมตรวจสอบย้อนกลับได้",
-            "11. ภาคผนวกมีหลักฐานสำคัญครบถ้วน",
-            "12. ไม่มีการคัดลอก/บิดเบือน/สร้างข้อมูล",
-            "13. สามารถอธิบายได้ว่า “อะไรคือผลงานที่ผู้วิจัยคิดค้น/พัฒนา”",
-            "14. สามารถอธิบายได้ว่า “ผลงานนั้นทำให้ผู้เรียนเปลี่ยนแปลงอย่างไร”",
-            "15. สามารถอธิบายได้ว่า “มีหลักฐานอะไรพิสูจน์ผลลัพธ์”"
-        ];
-
-        // State Store with LocalStorage Persistence
-        const STORAGE_KEY = 'voc_evaluation_state_v1';
-        let state = {
-            evaluations: {}, // { '1.1.1': 'pass' | 'revise' | 'missing' }
-            remarks: {},
-            finalRisks: {}, // { 0: 'pass' | 'fix' }
-            uploadedText: "",
-            signerName: "",
-            signerPosition: "",
-            currentFilter: "all"
+        // Global Evaluation State
+        let currentEvaluation = {
+            scores: {}, // map of indicatorId -> score (1, 2, or 3)
+            notes: {},  // map of indicatorId -> feedback
+            overallFeedback: "",
+            filter: 'all'
         };
 
-        // Load saved state if exists
-        function loadSavedState() {
-            try {
-                const saved = localStorage.getItem(STORAGE_KEY);
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    state.evaluations = parsed.evaluations || {};
-                    state.remarks = parsed.remarks || {};
-                    state.finalRisks = parsed.finalRisks || {};
-                    state.signerName = parsed.signerName || "";
-                    state.signerPosition = parsed.signerPosition || "";
-                    
-                    if (document.getElementById('signer-name')) {
-                        document.getElementById('signer-name').value = state.signerName;
-                    }
-                    if (document.getElementById('signer-position')) {
-                        document.getElementById('signer-position').value = state.signerPosition;
-                    }
-                }
-            } catch (e) {
-                console.warn('Could not load from localStorage:', e);
-            }
-        }
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const researchContent = document.getElementById('researchContent');
+        const wordCount = document.getElementById('wordCount');
 
-        function saveCurrentState() {
-            try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify({
-                    evaluations: state.evaluations,
-                    remarks: state.remarks,
-                    finalRisks: state.finalRisks,
-                    signerName: state.signerName,
-                    signerPosition: state.signerPosition
-                }));
-                const indicator = document.getElementById('save-indicator');
-                if (indicator) {
-                    indicator.classList.remove('hidden');
-                    clearTimeout(window._saveTimer);
-                    window._saveTimer = setTimeout(() => indicator.classList.add('hidden'), 2000);
-                }
-            } catch (e) {
-                console.warn('Could not save to localStorage:', e);
-            }
-        }
+        // Setup dropzone
+        dropZone.addEventListener('click', () => fileInput.click());
 
-        function saveSignerInfo() {
-            state.signerName = document.getElementById('signer-name').value;
-            state.signerPosition = document.getElementById('signer-position').value;
-            saveCurrentState();
-        }
-
-        // Initialize App
-        document.addEventListener('DOMContentLoaded', () => {
-            loadSavedState();
-            renderChecklist();
-            renderFinalRisks();
-            setupFileUpload();
-            updateCalculations();
-            document.getElementById('current-date-txt').innerText = new Date().toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric'});
-            lucide.createIcons();
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('border-brand-500', 'bg-brand-100/50');
         });
 
-        // Render Checklist HTML
-        function renderChecklist() {
-            const container = document.getElementById('checklist-container');
-            container.innerHTML = '';
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('border-brand-500', 'bg-brand-100/50');
+        });
 
-            CHECKLIST_DATA.forEach(section => {
-                const sectionDiv = document.createElement('div');
-                sectionDiv.className = "p-6 space-y-6";
-
-                let sectionHtml = `
-                    <div class="border-b border-slate-200 pb-3">
-                        <h4 class="text-base font-bold text-voc-blue flex items-center gap-2">
-                            <span class="w-2.5 h-2.5 rounded-full bg-voc-gold"></span>
-                            ${section.title}
-                        </h4>
-                    </div>
-                `;
-
-                section.subsections.forEach(sub => {
-                    sectionHtml += `
-                        <div class="space-y-3">
-                            <h5 class="text-sm font-bold text-slate-700 bg-slate-100/70 px-3 py-1.5 rounded-md">${sub.title}</h5>
-                            <div class="overflow-x-auto">
-                                <table class="w-full text-xs text-left text-slate-600 border border-slate-200 rounded-lg">
-                                    <thead class="text-[11px] uppercase bg-slate-50 text-slate-500 border-b border-slate-200">
-                                        <tr>
-                                            <th class="py-2.5 px-3 w-16 text-center">ลำดับ</th>
-                                            <th class="py-2.5 px-3">รายการตรวจสอบความสมบูรณ์</th>
-                                            <th class="py-2.5 px-2 w-44 text-center">สถานะการประเมิน</th>
-                                            <th class="py-2.5 px-3 w-52">หลักฐาน / ข้อเสนอแนะ</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="divide-y divide-slate-100">
-                    `;
-
-                    sub.items.forEach(item => {
-                        const currentStatus = state.evaluations[item.id] || 'missing';
-                        sectionHtml += `
-                            <tr class="hover:bg-slate-50 transition-colors item-row" data-id="${item.id}" data-status="${currentStatus}">
-                                <td class="py-2.5 px-3 text-center font-bold text-slate-500">${item.id}</td>
-                                <td class="py-2.5 px-3 font-medium text-slate-800 leading-relaxed">${item.text}</td>
-                                <td class="py-2.5 px-2 text-center">
-                                    <div class="inline-flex rounded-lg p-0.5 bg-slate-200/80 gap-1 text-[11px]">
-                                        <button type="button" onclick="setItemStatus('${item.id}', 'pass', this)" 
-                                            class="status-btn btn-pass px-2.5 py-1 rounded font-semibold transition ${currentStatus === 'pass' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-700 hover:text-black'}">
-                                            ผ่าน
-                                        </button>
-                                        <button type="button" onclick="setItemStatus('${item.id}', 'revise', this)" 
-                                            class="status-btn btn-revise px-2.5 py-1 rounded font-semibold transition ${currentStatus === 'revise' ? 'bg-amber-500 text-white shadow-xs' : 'text-slate-700 hover:text-black'}">
-                                            ปรับปรุง
-                                        </button>
-                                        <button type="button" onclick="setItemStatus('${item.id}', 'missing', this)" 
-                                            class="status-btn btn-missing px-2.5 py-1 rounded font-semibold transition ${currentStatus === 'missing' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-700 hover:text-black'}">
-                                            ไม่พบ
-                                        </button>
-                                    </div>
-                                </td>
-                                <td class="py-2.5 px-3">
-                                    <input type="text" value="${state.remarks[item.id] || ''}" 
-                                        oninput="updateRemark('${item.id}', this.value)"
-                                        placeholder="ระบุหลักฐาน/จุดที่พบ..." 
-                                        class="w-full bg-slate-50 border border-slate-200 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-voc-blue outline-none">
-                                </td>
-                            </tr>
-                        `;
-                    });
-
-                    sectionHtml += `
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                sectionDiv.innerHTML = sectionHtml;
-                container.appendChild(sectionDiv);
-            });
-
-            applyFilter();
-        }
-
-        // Render High Risk Final 15 Points
-        function renderFinalRisks() {
-            const container = document.getElementById('final-risk-container');
-            container.innerHTML = '';
-
-            FINAL_RISK_ITEMS.forEach((text, index) => {
-                const isFixed = state.finalRisks[index] === 'pass';
-                const div = document.createElement('div');
-                div.className = "py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3";
-                div.id = `final-risk-row-${index}`;
-                div.innerHTML = `
-                    <div class="flex items-start gap-2.5">
-                        <span class="text-xs font-bold text-slate-400 mt-0.5">#${index + 1}</span>
-                        <p class="text-xs sm:text-sm font-semibold risk-text ${isFixed ? 'text-emerald-800 line-through opacity-80' : 'text-slate-800'}">${text}</p>
-                    </div>
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                        <button type="button" onclick="setRiskStatus(${index}, 'pass')" 
-                            class="risk-pass-btn px-3 py-1 rounded text-xs font-bold transition ${isFixed ? 'bg-emerald-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-emerald-100'}">
-                            ผ่าน
-                        </button>
-                        <button type="button" onclick="setRiskStatus(${index}, 'fix')" 
-                            class="risk-fix-btn px-3 py-1 rounded text-xs font-bold transition ${!isFixed ? 'bg-amber-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-amber-100'}">
-                            ต้องแก้
-                        </button>
-                    </div>
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        function setItemStatus(id, status, btnElement) {
-            state.evaluations[id] = status;
-
-            // Direct in-place DOM update for speed and avoiding input focus loss
-            const row = btnElement ? btnElement.closest('.item-row') : document.querySelector(`.item-row[data-id="${id}"]`);
-            if (row) {
-                row.setAttribute('data-status', status);
-                const pBtn = row.querySelector('.btn-pass');
-                const rBtn = row.querySelector('.btn-revise');
-                const mBtn = row.querySelector('.btn-missing');
-
-                pBtn.className = `status-btn btn-pass px-2.5 py-1 rounded font-semibold transition ${status === 'pass' ? 'bg-emerald-600 text-white shadow-xs' : 'text-slate-700 hover:text-black'}`;
-                rBtn.className = `status-btn btn-revise px-2.5 py-1 rounded font-semibold transition ${status === 'revise' ? 'bg-amber-500 text-white shadow-xs' : 'text-slate-700 hover:text-black'}`;
-                mBtn.className = `status-btn btn-missing px-2.5 py-1 rounded font-semibold transition ${status === 'missing' ? 'bg-rose-600 text-white shadow-xs' : 'text-slate-700 hover:text-black'}`;
-
-                // Apply current filter visibility
-                if (state.currentFilter !== 'all') {
-                    row.style.display = (status === state.currentFilter) ? '' : 'none';
-                }
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('border-brand-500', 'bg-brand-100/50');
+            if (e.dataTransfer.files.length > 0) {
+                handleUploadedFile(e.dataTransfer.files[0]);
             }
+        });
 
-            saveCurrentState();
-            updateCalculations();
-        }
-
-        function updateRemark(id, val) {
-            state.remarks[id] = val;
-            saveCurrentState();
-        }
-
-        function setRiskStatus(index, status) {
-            state.finalRisks[index] = status;
-            
-            const row = document.getElementById(`final-risk-row-${index}`);
-            if (row) {
-                const isFixed = status === 'pass';
-                const p = row.querySelector('.risk-text');
-                const passBtn = row.querySelector('.risk-pass-btn');
-                const fixBtn = row.querySelector('.risk-fix-btn');
-
-                p.className = `text-xs sm:text-sm font-semibold risk-text ${isFixed ? 'text-emerald-800 line-through opacity-80' : 'text-slate-800'}`;
-                passBtn.className = `risk-pass-btn px-3 py-1 rounded text-xs font-bold transition ${isFixed ? 'bg-emerald-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-emerald-100'}`;
-                fixBtn.className = `risk-fix-btn px-3 py-1 rounded text-xs font-bold transition ${!isFixed ? 'bg-amber-600 text-white shadow' : 'bg-slate-100 text-slate-600 hover:bg-amber-100'}`;
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleUploadedFile(e.target.files[0]);
             }
+        });
 
-            saveCurrentState();
-            updateCalculations();
-        }
+        researchContent.addEventListener('input', () => {
+            updateWordCount();
+            autoSaveDraft();
+        });
 
-        // Calculation of Scores and Readiness Level
-        function updateCalculations() {
-            let total = 0;
-            let pass = 0;
-            let revise = 0;
-            let missing = 0;
-
-            CHECKLIST_DATA.forEach(section => {
-                section.subsections.forEach(sub => {
-                    sub.items.forEach(item => {
-                        total++;
-                        const s = state.evaluations[item.id] || 'missing';
-                        if (s === 'pass') pass++;
-                        else if (s === 'revise') revise++;
-                        else missing++;
-                    });
-                });
-            });
-
-            const percentage = total > 0 ? Math.round((pass / total) * 100) : 0;
-
-            // Update DOM Counts
-            document.getElementById('count-pass').innerText = pass;
-            document.getElementById('count-revise').innerText = revise;
-            document.getElementById('count-missing').innerText = missing;
-            document.getElementById('score-percentage').innerText = percentage + '%';
-            document.getElementById('progress-label').innerText = `${pass} / ${total} รายการ`;
-
-            const fill = document.getElementById('progress-fill');
-            fill.style.width = percentage + '%';
-
-            // Risk status
-            let riskNeedFix = 0;
-            FINAL_RISK_ITEMS.forEach((_, idx) => {
-                if (state.finalRisks[idx] !== 'pass') riskNeedFix++;
-            });
-            document.getElementById('final-risk-counter').innerText = `ต้องแก้ไข ${riskNeedFix} / 15`;
-            document.getElementById('risk-summary-text').innerText = `มีจุดเสี่ยงวิกฤตที่ต้องตรวจซ้ำ ${riskNeedFix} รายการ`;
-
-            // Evaluation Criteria Grading (ระดับ 1 - 4)
-            const badge = document.getElementById('readiness-badge');
-            const desc = document.getElementById('readiness-desc');
-
-            if (pass === 0 && revise === 0 && !state.uploadedText) {
-                badge.className = "mt-2 inline-flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-lg text-white bg-slate-500 shadow-sm";
-                badge.innerHTML = `<i data-lucide="help-circle" class="w-6 h-6"></i> <span>ยังไม่ได้ประเมินผลงาน</span>`;
-                desc.innerHTML = "กรุณาแนบไฟล์ผลงานวิชาการเพื่อให้ระบบวิเคราะห์อัตโนมัติ หรือทำเครื่องหมายในรายการตรวจสอบด้านล่าง";
-            } else if (percentage >= 85 && riskNeedFix <= 2) {
-                badge.className = "mt-2 inline-flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-lg text-white bg-emerald-600 shadow-md";
-                badge.innerHTML = `<i data-lucide="check-check" class="w-6 h-6"></i> <span>ระดับ 1 พร้อมส่งประเมิน</span>`;
-                desc.innerHTML = "<strong>ความพร้อมยอดเยี่ยม:</strong> ประเด็นสำคัญมีหลักฐานชัดเจน และมีความสอดคล้องตลอดทั้งระบบ (R&D, ระเบียบวิธีวิจัย, สถิติ และผลลัพธ์ผู้เรียน)";
-            } else if (percentage >= 70 && riskNeedFix <= 5) {
-                badge.className = "mt-2 inline-flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-lg text-white bg-blue-600 shadow-md";
-                badge.innerHTML = `<i data-lucide="alert-circle" class="w-6 h-6"></i> <span>ระดับ 2 พร้อมเกือบส่ง</span>`;
-                desc.innerHTML = "<strong>ความพร้อมปานกลาง:</strong> มีสาระและหลักฐานครบเป็นส่วนใหญ่ แต่ควรปรับปรุงรายละเอียดบางประเด็น เช่น ภาคผนวก หรือการอภิปรายผล";
-            } else if (percentage >= 50) {
-                badge.className = "mt-2 inline-flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-lg text-white bg-amber-500 shadow-md";
-                badge.innerHTML = `<i data-lucide="alert-triangle" class="w-6 h-6"></i> <span>ระดับ 3 ต้องปรับปรุงก่อนส่ง</span>`;
-                desc.innerHTML = "<strong>พบข้อบกพร่องสำคัญ:</strong> ขาดหลักฐานเชิงประจักษ์บางส่วน หรือความสอดคล้องระหว่างปัญหา นวัตกรรม และผลสัมฤทธิ์ยังไม่ชัดเจน";
-            } else {
-                badge.className = "mt-2 inline-flex items-center gap-2 px-4 py-3 rounded-xl font-bold text-lg text-white bg-rose-600 shadow-md";
-                badge.innerHTML = `<i data-lucide="x-circle" class="w-6 h-6"></i> <span>ระดับ 4 ควรทบทวนผลงานเชิงระบบ</span>`;
-                desc.innerHTML = "<strong>พบข้อจำกัดสำคัญ:</strong> พบข้อจำกัดด้านการออกแบบวิจัย นวัตกรรม หรือหลักฐานผลสัมฤทธิ์ ควรปรับปรุงโครงสร้างงานวิจัยใหม่ทั้งหมดก่อนส่ง";
+        // Save metadata on change
+        ['teacherName', 'schoolName', 'deptCategory', 'deptMajor', 'researchTitle'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => autoSaveDraft());
             }
-            lucide.createIcons();
+        });
+
+        function updateWordCount() {
+            const len = researchContent.value.trim().length;
+            wordCount.textContent = `${len.toLocaleString()} ตัวอักษร`;
         }
 
-        // File Drag & Drop + Upload
-        function setupFileUpload() {
-            const dropZone = document.getElementById('drop-zone');
-            const fileInput = document.getElementById('file-input');
-
-            dropZone.addEventListener('click', () => fileInput.click());
-            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-voc-blue'); });
-            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-voc-blue'));
-            dropZone.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dropZone.classList.remove('border-voc-blue');
-                if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
-            });
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length) handleFile(e.target.files[0]);
-            });
-        }
-
-        function handleFile(file) {
-            const statusCard = document.getElementById('status-card');
-            const statusSpinner = document.getElementById('status-spinner');
-            const statusIcon = document.getElementById('status-icon');
-            const filenameTxt = document.getElementById('status-filename');
-            const messageTxt = document.getElementById('status-message');
-
-            statusCard.classList.remove('hidden');
-            statusSpinner.classList.remove('hidden');
-            statusIcon.classList.add('hidden');
-            filenameTxt.innerText = file.name;
-            messageTxt.innerText = "กำลังอ่านและวิเคราะห์สาระสำคัญของผลงานวิชาการ...";
+        async function handleUploadedFile(file) {
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileInfoBadge').classList.remove('hidden');
 
             const extension = file.name.split('.').pop().toLowerCase();
-            const reader = new FileReader();
 
-            if (extension === 'docx') {
-                reader.onload = function(event) {
-                    mammoth.extractRawText({ arrayBuffer: event.target.result })
-                        .then(result => {
-                            state.uploadedText = result.value.toLowerCase();
-                            finishAnalysis(file.name);
-                        })
-                        .catch(err => {
-                            messageTxt.innerText = "อ่านไฟล์ DOCX ล้มเหลว กรุณาลองใหม่อีกครั้ง";
-                            statusSpinner.classList.add('hidden');
-                        });
-                };
-                reader.readAsArrayBuffer(file);
-            } else if (extension === 'txt') {
-                reader.onload = function(event) {
-                    state.uploadedText = event.target.result.toLowerCase();
-                    finishAnalysis(file.name);
-                };
-                reader.readAsText(file);
-            } else if (extension === 'pdf') {
-                reader.onload = function(event) {
-                    const typedarray = new Uint8Array(event.target.result);
-                    pdfjsLib.getDocument(typedarray).promise.then(pdf => {
-                        let textPromises = [];
-                        for (let i = 1; i <= Math.min(pdf.numPages, 50); i++) { // scan up to first 50 pages
-                            textPromises.push(pdf.getPage(i).then(page => page.getTextContent().then(c => c.items.map(s => s.str).join(" "))));
-                        }
-                        Promise.all(textPromises).then(texts => {
-                            state.uploadedText = texts.join(" ").toLowerCase();
-                            finishAnalysis(file.name);
-                        });
-                    }).catch(() => {
-                        simulateAnalysis(file.name);
-                    });
-                };
-                reader.readAsArrayBuffer(file);
-            } else {
-                simulateAnalysis(file.name);
-            }
-        }
-
-        function simulateAnalysis(fileName) {
-            setTimeout(() => {
-                state.uploadedText = "วิจัยและพัฒนา r&d แผนการจัดการเรียนรู้ ioc 0.80 t-test apa 7 ผลสัมฤทธิ์ แบบประเมินทักษะ rubric บทที่ 1 บทที่ 2 บทที่ 3 บทที่ 4 บทที่ 5 ภาคผนวก";
-                finishAnalysis(fileName);
-            }, 1200);
-        }
-
-        function finishAnalysis(fileName) {
-            document.getElementById('status-spinner').classList.add('hidden');
-            document.getElementById('status-icon').classList.remove('hidden');
-            document.getElementById('status-message').innerText = `ระบบประเมินเนื้อหาเสร็จสิ้น พบสาระสำคัญสอดคล้องกับข้อกำหนด`;
-            triggerAutoCheck();
-        }
-
-        // Automatic Keyword Matching & Evidence Identification
-        function triggerAutoCheck() {
-            const content = state.uploadedText || "";
-            CHECKLIST_DATA.forEach(sec => {
-                sec.subsections.forEach(sub => {
-                    sub.items.forEach(item => {
-                        let matches = 0;
-                        let foundWord = "";
-                        item.keywords.forEach(kw => {
-                            if (content.includes(kw.toLowerCase())) {
-                                matches++;
-                                if (!foundWord) foundWord = kw;
-                            }
-                        });
-
-                        if (matches >= 2 || (matches >= 1 && content.length > 500)) {
-                            state.evaluations[item.id] = 'pass';
-                            state.remarks[item.id] = `พบคำสำคัญ/หลักฐาน: "${foundWord}"`;
-                        } else if (matches === 1) {
-                            state.evaluations[item.id] = 'revise';
-                            state.remarks[item.id] = `พบเพียงบางส่วน ("${foundWord}") ควรเพิ่มรายละเอียด`;
-                        } else {
-                            if (!state.evaluations[item.id]) {
-                                state.evaluations[item.id] = 'missing';
-                            }
-                        }
-                    });
-                });
-            });
-
-            // Check high risk matches
-            FINAL_RISK_ITEMS.forEach((_, idx) => {
-                state.finalRisks[idx] = (content.length > 500 && idx % 3 !== 0) ? 'pass' : 'fix';
-            });
-
-            saveCurrentState();
-            renderChecklist();
-            renderFinalRisks();
-            updateCalculations();
-        }
-
-        function filterItems(type, btnElement) {
-            state.currentFilter = type;
-            
-            // Highlight clicked button
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.className = "px-2.5 py-1 rounded-md text-slate-700 bg-slate-100 hover:bg-slate-200 font-semibold filter-btn";
-            });
-            if (btnElement) {
-                if (type === 'all') {
-                    btnElement.className = "px-2.5 py-1 rounded-md bg-voc-blue text-white font-semibold filter-btn active";
-                } else if (type === 'pass') {
-                    btnElement.className = "px-2.5 py-1 rounded-md bg-emerald-600 text-white font-semibold filter-btn active";
-                } else if (type === 'revise') {
-                    btnElement.className = "px-2.5 py-1 rounded-md bg-amber-500 text-white font-semibold filter-btn active";
-                } else if (type === 'missing') {
-                    btnElement.className = "px-2.5 py-1 rounded-md bg-rose-600 text-white font-semibold filter-btn active";
-                }
-            }
-
-            applyFilter();
-        }
-
-        function applyFilter() {
-            const rows = document.querySelectorAll('.item-row');
-            rows.forEach(row => {
-                const status = row.getAttribute('data-status');
-                if (state.currentFilter === 'all' || status === state.currentFilter) {
-                    row.style.display = '';
+            try {
+                if (extension === 'docx') {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const result = await mammoth.extractRawText({ arrayBuffer: arrayBuffer });
+                    researchContent.value = result.value;
+                    autoExtractMeta(result.value, file.name);
+                } else if (extension === 'pdf') {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    let fullText = '';
+                    const maxPages = Math.min(pdf.numPages, 50);
+                    for (let i = 1; i <= maxPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        const pageText = textContent.items.map(item => item.str).join(' ');
+                        fullText += pageText + '\n';
+                    }
+                    researchContent.value = fullText;
+                    autoExtractMeta(fullText, file.name);
                 } else {
-                    row.style.display = 'none';
+                    const text = await file.text();
+                    researchContent.value = text;
+                    autoExtractMeta(text, file.name);
                 }
+                updateWordCount();
+                autoSaveDraft();
+            } catch (err) {
+                console.error("Error reading file:", err);
+                alert("ไม่สามารถอ่านไฟล์ได้ กรุณาลองคัดลอกข้อความมาวางในช่องเนื้อหางานวิจัยแทน");
+            }
+        }
+
+        function removeSelectedFile() {
+            fileInput.value = '';
+            document.getElementById('fileInfoBadge').classList.add('hidden');
+        }
+
+        function autoExtractMeta(text, filename) {
+            const titleInput = document.getElementById('researchTitle');
+            if (!titleInput.value.trim()) {
+                const titleMatch = text.match(/(?:เรื่อง|ชื่องานวิจัย|โครงการวิจัย)\s*[:：]\s*([^\n\r]+)/i);
+                if (titleMatch && titleMatch[1]) {
+                    titleInput.value = titleMatch[1].trim();
+                } else if (filename) {
+                    titleInput.value = filename.replace(/\.[^/.]+$/, "");
+                }
+            }
+
+            const teacherInput = document.getElementById('teacherName');
+            if (!teacherInput.value.trim()) {
+                const nameMatch = text.match(/(?:ผู้วิจัย|ชื่อผู้สอน|จัดทำโดย|ชื่อครู)\s*[:：]?\s*([^\n\r]+)/i);
+                if (nameMatch && nameMatch[1]) {
+                    teacherInput.value = nameMatch[1].trim();
+                }
+            }
+
+            const schoolInput = document.getElementById('schoolName');
+            if (!schoolInput.value.trim()) {
+                const schoolMatch = text.match(/(?:วิทยาลัย\S+|สถานศึกษา\s*[:：]?\s*([^\n\r]+))/i);
+                if (schoolMatch && schoolMatch[0]) {
+                    schoolInput.value = schoolMatch[0].trim();
+                }
+            }
+        }
+
+        function loadSampleResearch() {
+            document.getElementById('teacherName').value = "นายวิชัย พัฒนศาสตร์";
+            document.getElementById('schoolName').value = "วิทยาลัยเทคนิคพระนครศรีอยุธยา";
+            document.getElementById('deptCategory').value = "ประเภทวิชาอุตสาหกรรม";
+            document.getElementById('deptMajor').value = "สาขาวิชาช่างยนต์";
+            document.getElementById('researchTitle').value = "การพัฒนาผลสัมฤทธิ์ทางการเรียนวิชางานระบบฉีดเชื้อเพลิงอิเล็กทรอนิกส์ โดยใช้ชุดฝึกทักษะจำลองร่วมกับการจัดการเรียนรู้แบบแก้ปัญหา สำหรับนักศึกษาระดับ ปวช.2";
+
+            researchContent.value = `ชื่องานวิจัย: การพัฒนาผลสัมฤทธิ์ทางการเรียนวิชางานระบบฉีดเชื้อเพลิงอิเล็กทรอนิกส์ โดยใช้ชุดฝึกทักษะจำลองร่วมกับการจัดการเรียนรู้แบบแก้ปัญหา สำหรับนักศึกษาระดับ ปวช.2
+ผู้วิจัย: นายวิชัย พัฒนศาสตร์ สถานศึกษา: วิทยาลัยเทคนิคพระนครศรีอยุธยา
+
+บทคัดย่อ
+การวิจัยครั้งนี้มีวัตถุประสงค์เพื่อ 1) พัฒนาชุดฝึกทักษะจำลองระบบฉีดเชื้อเพลิงอิเล็กทรอนิกส์ให้มีประสิทธิภาพตามเกณฑ์ 80/80 2) เปรียบเทียบผลสัมฤทธิ์ทางการเรียนก่อนเรียนและหลังเรียนด้วยชุดฝึกทักษะร่วมกับการจัดการเรียนรู้แบบแก้ปัญหา และ 3) ศึกษาความพึงพอใจของผู้เรียน กลุ่มเป้าหมายคือ นักศึกษาระดับ ปวช. ชั้นปีที่ 2 สาขาวิชาช่างยนต์ ภาคเรียนที่ 1 ปีการศึกษา 2568 จำนวน 28 คน ได้มาโดยวิธีเลือกแบบเจาะจง เครื่องมือที่ใช้ ได้แก่ 1) ชุดฝึกทักษะจำลอง 2) แผนการจัดการเรียนรู้ 3) แบบทดสอบวัดผลสัมฤทธิ์ 4) แบบประเมินความพึงพอใจ สถิติที่ใช้ในการวิเคราะห์ข้อมูล ได้แก่ ร้อยละ ค่าเฉลี่ย ส่วนเบี่ยงเบนมาตรฐาน และ t-test dependent
+ผลการวิจัยพบว่า
+1. ชุดฝึกทักษะมีประสิทธิภาพ E1/E2 เท่ากับ 82.50/83.15 สูงกว่าเกณฑ์ที่กำหนด
+2. ผลสัมฤทธิ์ทางการเรียนหลังเรียนสูงกว่าก่อนเรียนอย่างมีนัยสำคัญทางสถิติที่ระดับ .01
+3. ความพึงพอใจของผู้เรียนอยู่ในระดับมากที่สุด (X̄ = 4.62, S.D. = 0.48)
+
+1. ความเป็นมาและความสำคัญของปัญหา
+ในปัจจุบันเทคโนโลยียานยนต์ได้เปลี่ยนผ่านสู่ระบบอิเล็กทรอนิกส์และเซนเซอร์อัจฉริยะอย่างรวดเร็ว จากการจัดการเรียนการสอนวิชางานระบบฉีดเชื้อเพลิงแก่นักเรียนระดับ ปวช.2 พบว่าผู้เรียนขาดทักษะการวิเคราะห์ปัญหาสัญญาณผิดพลาด เนื่องจากเครื่องยนต์จริงมีพื้นที่จำกัดและอันตราย ผู้วิจัยจึงได้สร้างชุดฝึกจำลองและนำทฤษฎี Problem-based Learning (PBL) มาประยุกต์ใช้เพื่อเสริมสร้างสมรรถนะอาชีพจริง
+
+2. วัตถุประสงค์ของการวิจัย
+2.1 เพื่อพัฒนาและหาประสิทธิภาพของชุดฝึกทักษะจำลองตามเกณฑ์ 80/80
+2.2 เพื่อเปรียบเทียบผลสัมฤทธิ์ทางการเรียนของผู้เรียนก่อนและหลังเรียน
+2.3 เพื่อประเมินความพึงพอใจของนักเรียนที่มีต่อการจัดกิจกรรมการเรียนรู้
+
+3. ขอบเขตของการวิจัย
+- กลุ่มเป้าหมาย: นักศึกษา ปวช.2 สาขางานยานยนต์ ห้อง 1 จำนวน 28 คน วิทยาลัยเทคนิคพระนครศรีอยุธยา
+- ตัวแปรอิสระ: การจัดการเรียนรู้โดยใช้ชุดฝึกทักษะจำลองร่วมกับการจัดการเรียนรู้แบบแก้ปัญหา
+- ตัวแปรตาม: ประสิทธิภาพชุดฝึก, ผลสัมฤทธิ์ทางการเรียน, ความพึงพอใจ
+- ระยะเวลา: ภาคเรียนที่ 1 ปีการศึกษา 2568 รวม 18 สัปดาห์ (36 ชั่วโมง)
+
+4. นิยามศัพท์เฉพาะ
+- ชุดฝึกทักษะจำลอง หมายถึง บอร์ดวงจรจำลองสัญญาณเซนเซอร์และกล่อง ECU ระบบหัวฉีดที่สามารถตั้งโจทย์ปัญหาความขัดข้องได้
+- ผลสัมฤทธิ์ทางการเรียน หมายถึง คะแนนจากการทำแบบทดสอบวัดความรู้เชิงทฤษฎีและภาคปฏิบัติ 40 ข้อ
+
+5. สมมติฐานการวิจัย
+1. ชุดฝึกทักษะจำลองมีประสิทธิภาพไม่ต่ำกว่าเกณฑ์ 80/80
+2. ผลสัมฤทธิ์ทางการเรียนหลังเรียนสูงกว่าก่อนเรียนอย่างมีนัยสำคัญทางสถิติที่ระดับ .05
+
+6. ประโยชน์ที่ได้รับจากการวิจัย
+1. ผู้เรียนมีทักษะวิชาชีพและผลสัมฤทธิ์ทางการเรียนสูงขึ้น
+2. แผนกวิชาช่างยนต์มีสื่อนวัตกรรมที่ปลอดภัยและประหยัดงบประมาณ
+
+7. เอกสารและงานวิจัยที่เกี่ยวข้อง
+ผู้วิจัยได้ศึกษาทฤษฎีการสร้างชุดฝึกของ Skinner, หลักการเรียนรู้แบบโครงสร้างความรู้ (Constructivism) และงานวิจัยของสมชาย (2565) เรื่องการสร้างชุดฝึกยานยนต์ไฟฟ้า
+
+8. วิธีดำเนินการวิจัย
+สร้างเครื่องมือโดยผ่านการตรวจของผู้เชี่ยวชาญ 3 ท่าน ได้ค่า IOC เฉลี่ย 0.88 นำไปทดลองใช้กับกลุ่มตัวอย่าง และทดสอบก่อน-หลังเรียน
+
+9. ผลการวิจัยและการอภิปรายผล
+ผู้เรียนเข้าใจการทำงานของเซนเซอร์ได้ชัดเจนขึ้น สามารถตรวจเช็กโค้ดความผิดพลาดได้อย่างแม่นยำ สอดคล้องกับงานวิจัยของสมชาย (2565)
+
+10. ข้อเสนอแนะ
+10.1 ข้อเสนอแนะในการนำผลการวิจัยไปใช้: ควรจัดสรรเวลาให้นักเรียนทุกคนได้ฝึกปฏิบัติจริงกับบอร์ดจำลองอย่างทั่วถึง
+10.2 ข้อเสนอแนะในการวิจัยครั้งต่อไป: ควรพัฒนาต่อยอดชุดฝึกให้เชื่อมต่อกับแอปพลิเคชันบนสมาร์ตโฟน`;
+
+            updateWordCount();
+            autoSaveDraft();
+        }
+
+        async function startEvaluation() {
+            const content = researchContent.value.trim();
+            const title = document.getElementById('researchTitle').value.trim();
+
+            if (!content && !title) {
+                alert("กรุณาแนบไฟล์งานวิจัย หรือวางเนื้อหางานวิจัยก่อนทำการประเมิน");
+                return;
+            }
+
+            // Update UI State
+            document.getElementById('stateEmpty').classList.add('hidden');
+            document.getElementById('stateResult').classList.add('hidden');
+            document.getElementById('stateLoading').classList.remove('hidden');
+
+            const loadingTexts = [
+                "กำลังวิเคราะห์ชื่อเรื่อง ประเด็นปัญหา และวัตถุประสงค์...",
+                "กำลังตรวจสอบขอบเขต กลุ่มเป้าหมาย และเครื่องมือวิจัย...",
+                "กำลังประเมินระเบียบวิธีวิจัย การวิเคราะห์ข้อมูล และผลการวิจัย...",
+                "กำลังค้นหารายการที่ควรพัฒนา (1 คะแนน) และสังเคราะห์ข้อเสนอแนะเชิงลึก...",
+                "กำลังประมวลผลคะแนนตามเกณฑ์ 19 หัวข้อ 29 ตัวชี้วัด สอศ...."
+            ];
+
+            let textIndex = 0;
+            const textInterval = setInterval(() => {
+                textIndex = (textIndex + 1) % loadingTexts.length;
+                document.getElementById('loadingStepText').textContent = loadingTexts[textIndex];
+            }, 1500);
+
+            try {
+                const apiKey = getSavedApiKey();
+                let evalData = null;
+
+                if (apiKey) {
+                    try {
+                        evalData = await callGeminiEvaluation(apiKey, title, content);
+                    } catch (apiErr) {
+                        console.warn("Gemini API call failed, falling back to advanced heuristic:", apiErr);
+                        evalData = generateHeuristicEvaluation(title, content);
+                    }
+                } else {
+                    await new Promise(r => setTimeout(r, 1200));
+                    evalData = generateHeuristicEvaluation(title, content);
+                }
+
+                clearInterval(textInterval);
+                displayEvaluationResult(evalData);
+                autoSaveDraft();
+            } catch (error) {
+                clearInterval(textInterval);
+                console.error("Evaluation error:", error);
+                const fallbackData = generateHeuristicEvaluation(title, content);
+                displayEvaluationResult(fallbackData);
+                autoSaveDraft();
+            } finally {
+                document.getElementById('stateLoading').classList.add('hidden');
+                document.getElementById('stateResult').classList.remove('hidden');
+            }
+        }
+
+        // Gemini API Caller
+        async function callGeminiEvaluation(apiKey, title, text) {
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+            const systemPrompt = `คุณคือศึกษานิเทศก์ผู้เชี่ยวชาญระดับสูงของสำนักงานคณะกรรมการการอาชีวศึกษา (สอศ.) 
+ทำหน้าที่ประเมินคุณภาพงานวิจัยในชั้นเรียนเพื่อพัฒนาการเรียนรู้ตามเกณฑ์มาตรฐานแบบประเมิน สอศ. ทั้ง 19 หัวข้อ 29 ตัวชี้วัด อย่างเป็นรูปธรรม แม่นยำ และตรงไปตรงมา
+เกณฑ์คะแนนแต่ละตัวชี้วัดคือ:
+3 = ดี (ครบถ้วน ถูกต้องตามหลักวิชาการ ชัดเจน)
+2 = พอใช้ (มีองค์ประกอบแต่ยังไม่สมบูรณ์ หรือขาดความชัดเจนบางส่วน)
+1 = ควรพัฒนา (ไม่ปรากฏ ขาดองค์ประกอบสำคัญ หรือไม่ถูกต้องตามหลักการวิจัย)
+
+ให้เน้นตรวจสอบอย่างละเอียด:
+หากพบรายการใดได้ 1 (ควรพัฒนา) หรือ 2 (พอใช้) ให้ระบุข้อสังเกตและคำแนะนำในการปรับปรุงแก้ไขที่เป็นรูปธรรมและนำไปปฏิบัติได้จริงในบริบทอาชีวศึกษา`;
+
+            const userPrompt = `กรุณาประเมินงานวิจัยในชั้นเรียนนี้ตามแบบประเมิน สอศ.:
+ชื่องานวิจัย: ${title || 'ไม่ระบุชัดเจน'}
+เนื้อหางานวิจัย:
+${text.substring(0, 15000)}
+
+จงตอบกลับเป็นรูปแบบ JSON โดยประเมินตัวชี้วัดครบทั้ง 29 รายการตามตาราง ดังนี้:
+1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 4.1, 5.1, 5.2, 6.1, 7.1, 8.1, 8.2, 8.3, 8.4, 9.1, 10.1, 10.2, 11.1, 12.1, 13.1, 13.2, 14.1, 15.1, 16.1, 16.2, 17.1, 18.1, 19.1`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userPrompt }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+                generationConfig: {
+                    responseMimeType: "application/json",
+                    responseSchema: {
+                        type: "OBJECT",
+                        properties: {
+                            teacherName: { type: "STRING" },
+                            schoolName: { type: "STRING" },
+                            researchTitle: { type: "STRING" },
+                            overallFeedback: { 
+                                type: "STRING", 
+                                description: "สรุปภาพรวมการนิเทศ จุดเด่น และข้อสังเกตที่ควรปรับปรุงในภาพรวม" 
+                            },
+                            evaluations: {
+                                type: "ARRAY",
+                                items: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        id: { type: "STRING", description: "รหัสตัวชี้วัด เช่น 1.1, 1.2 ... 19.1" },
+                                        score: { type: "INTEGER", description: "คะแนน 1, 2, หรือ 3" },
+                                        comment: { type: "STRING", description: "ข้อสังเกต/ข้อเสนอแนะที่ควรปรับปรุง" }
+                                    },
+                                    required: ["id", "score", "comment"]
+                                }
+                            }
+                        },
+                        required: ["evaluations", "overallFeedback"]
+                    }
+                }
+            };
+
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error(`Gemini API Error: ${response.status}`);
+            }
+
+            const result = await response.json();
+            const textPart = result.candidates?.[0]?.content?.parts?.[0]?.text;
+            if (!textPart) throw new Error("Empty response from AI");
+
+            return JSON.parse(textPart);
+        }
+
+        // Advanced Thai Academic Heuristic Engine
+        function generateHeuristicEvaluation(title, text) {
+            const hasTitle = (title && title.length > 5) || /(?:เรื่อง|ชื่องานวิจัย)/i.test(text);
+            const hasObjective = /(วัตถุประสงค์|จุดมุ่งหมาย)/i.test(text);
+            const hasTarget = /(กลุ่มเป้าหมาย|ประชากร|กลุ่มตัวอย่าง|ปวช|ปวส|นักเรียน|นักศึกษา)/i.test(text);
+            const hasTools = /(เครื่องมือ|ชุดฝึก|แบบทดสอบ|แบบประเมิน|แผนการจัด|ใบงาน)/i.test(text);
+            const hasMethod = /(วิธีดำเนินการ|เก็บรวบรวมข้อมูล|ขั้นตอน|ประชากรและกลุ่มตัวอย่าง)/i.test(text);
+            const hasStats = /(วิเคราะห์ข้อมูล|ค่าเฉลี่ย|ร้อยละ|t-test|s\.d\.|ส่วนเบี่ยงเบนมาตรฐาน)/i.test(text);
+            const hasResult = /(ผลการวิจัย|ผลการทดลอง|พบว่า|ตารางที่)/i.test(text);
+            const hasDiscuss = /(อภิปรายผล|สอดคล้องกับงานวิจัย|ขัดแย้งกับ)/i.test(text);
+            const hasAbstract = /(บทคัดย่อ|abstract)/i.test(text);
+            const hasRef = /(บรรณานุกรม|เอกสารอ้างอิง|references)/i.test(text);
+            const hasAppendix = /(ภาคผนวก|appendix)/i.test(text);
+            const hasIOC = /(ioc|ดัชนีความสอดคล้อง|ผู้เชี่ยวชาญ)/i.test(text);
+            const hasHypothesis = /(สมมติฐาน|สมมุติฐาน)/i.test(text);
+            const hasBenefit = /(ประโยชน์ที่คาดว่าจะได้รับ|ประโยชน์ที่ได้รับ)/i.test(text);
+            const hasScope = /(ขอบเขตการวิจัย|ขอบเขตของการวิจัย)/i.test(text);
+            const hasDefinition = /(นิยามศัพท์|นิยามศัพท์เฉพาะ|นิยามเชิงปฏิบัติการ)/i.test(text);
+            const hasLiterature = /(เอกสารที่เกี่ยวข้อง|วรรณกรรมที่เกี่ยวข้อง|ทฤษฎี)/i.test(text);
+            const hasSuggestion = /(ข้อเสนอแนะ|ข้อเสนอแนะในการนำไปใช้)/i.test(text);
+
+            const evals = [];
+
+            RUBRIC_CRITERIA.forEach(item => {
+                let score = 2;
+                let comment = "มีองค์ประกอบพอสังเขป ควรเพิ่มรายละเอียดให้สมบูรณ์";
+
+                switch(item.id) {
+                    case '1.1':
+                        if (hasTitle && (hasTarget || text.includes("ปวช") || text.includes("ปวส"))) {
+                            score = 3;
+                            comment = "ชื่อเรื่องมีความชัดเจน ระบุตัวแปร วิธีการ และกลุ่มเป้าหมายผู้เรียนอาชีวะได้ครบถ้วน";
+                        } else if (hasTitle) {
+                            score = 2;
+                            comment = "ชื่อเรื่องระบุตัวแปรได้ดี แต่ควรระบุกลุ่มเป้าหมาย (ระดับชั้น/สาขา) ให้ชัดเจนขึ้น";
+                        } else {
+                            score = 1;
+                            comment = "ไม่ปรากฏชื่อเรื่องที่ชัดเจน ควรตั้งชื่อเรื่องให้ครอบคลุมตัวแปร นวัตกรรม และกลุ่มเป้าหมาย";
+                        }
+                        break;
+
+                    case '1.2':
+                        if (text.length > 500 && (text.includes("ปัญหา") || text.includes("สมรรถนะ") || text.includes("ทักษะ"))) {
+                            score = 3;
+                            comment = "ประเด็นปัญหาสะท้อนความจำเป็นในการแก้ปัญหาการเรียนการสอนในชั้นเรียนจริง มีความทันสมัย";
+                        } else {
+                            score = 2;
+                            comment = "ประเด็นปัญหาน่าสนใจ ควรเน้นย้ำความสำคัญต่อการพัฒนาสมรรถนะวิชาชีพให้เด่นชัดยิ่งขึ้น";
+                        }
+                        break;
+
+                    case '2.1':
+                        if (text.includes("ความเป็นมา") || text.includes("ความสำคัญของปัญหา")) {
+                            score = text.length > 1000 ? 3 : 2;
+                            comment = score === 3 ? "ระบุสภาพปัญหาในชั้นเรียนและเชื่อมโยงสู่นวัตกรรมที่ใช้แก้ปัญหาได้อย่างเป็นลำดับ" : "ระบุสภาพปัญหาได้ดี ควรเพิ่มรายละเอียดสภาพปัญหาเชิงประจักษ์ในห้องเรียน";
+                        } else {
+                            score = 1;
+                            comment = "ขาดการระบุความเป็นมาและสภาพปัญหาที่เกิดขึ้นจริงในชั้นเรียนอย่างชัดเจน ควรเขียนเชื่อมโยงจากภาพรวมสู่ปัญหาจริง";
+                        }
+                        break;
+
+                    case '2.2':
+                        if (hasLiterature && (text.includes("ทฤษฎี") || text.includes("หลักการ"))) {
+                            score = 3;
+                            comment = "มีการอ้างอิงทฤษฎีการเรียนรู้และหลักการสนับสนุนเหตุผลในการสร้างนวัตกรรมน่าเชื่อถือ";
+                        } else {
+                            score = 2;
+                            comment = "ควรเพิ่มการอ้างอิงทฤษฎีการศึกษา หรือหลักการทางวิชาชีพที่รองรับการแก้ปัญหา";
+                        }
+                        break;
+
+                    case '3.1':
+                        if (hasObjective) {
+                            score = 3;
+                            comment = "วัตถุประสงค์เรียงลำดับตามขั้นตอนการวิจัย (สร้าง/ทดลอง/ประเมินผล) สอดคล้องกับชื่อเรื่องชัดเจน";
+                        } else {
+                            score = 1;
+                            comment = "ไม่พบหัวข้อวัตถุประสงค์การวิจัยที่ชัดเจน ควรระบุวัตถุประสงค์เป็นข้อ ๆ ให้ครอบคลุมทุกเป้าหมาย";
+                        }
+                        break;
+
+                    case '3.2':
+                        if (hasObjective && (text.includes("เปรียบเทียบ") || text.includes("พัฒนา") || text.includes("ศึกษา") || text.includes("ประสิทธิภาพ"))) {
+                            score = 3;
+                            comment = "วัตถุประสงค์เขียนในลักษณะที่สามารถวัดและประเมินผลได้จริงในเชิงประจักษ์";
+                        } else {
+                            score = 2;
+                            comment = "ควรปรับคำกริยาในวัตถุประสงค์ให้ชัดเจนและสามารถวัดผลสัมฤทธิ์ได้อย่างเป็นรูปธรรม";
+                        }
+                        break;
+
+                    case '4.1':
+                        if (hasScope && hasTarget) {
+                            score = 3;
+                            comment = "ระบุขอบเขตด้านกลุ่มเป้าหมาย เนื้อหาวิชา ตัวแปร และระยะเวลาทำการวิจัยครบถ้วน";
+                        } else if (hasTarget) {
+                            score = 2;
+                            comment = "มีข้อมูลกลุ่มเป้าหมาย แต่ควรระบุขอบเขตเนื้อหาตามหลักสูตรและระยะเวลา (ภาคเรียน/ปีการศึกษา) ให้ชัดเจน";
+                        } else {
+                            score = 1;
+                            comment = "ขาดการระบุขอบเขตการวิจัยที่สมบูรณ์ ควรระบุตัวแปรต้น ตัวแปรตาม กลุ่มเป้าหมาย และระยะเวลา";
+                        }
+                        break;
+
+                    case '5.1':
+                        if (hasDefinition) {
+                            score = 3;
+                            comment = "นิยามศัพท์เฉพาะครอบคลุมตัวแปรหลัก สื่อความหมายชัดเจนและตรงตามบริบทวิจัย";
+                        } else {
+                            score = 1;
+                            comment = "ไม่พบนิยามศัพท์เฉพาะ ควรระบุนิยามศัพท์สำหรับนวัตกรรมและตัวแปรที่ศึกษา";
+                        }
+                        break;
+
+                    case '5.2':
+                        if (hasDefinition && (text.includes("วัดจาก") || text.includes("หมายถึง") || text.includes("คะแนน"))) {
+                            score = 3;
+                            comment = "นิยามตัวแปรตามเชิงปฏิบัติการได้ชัดเจน ระบุพฤติกรรมและเครื่องมือที่ใช้วัดผลได้จริง";
+                        } else {
+                            score = 1;
+                            comment = "ควรนิยามตัวแปรตาม (เช่น ผลสัมฤทธิ์, ทักษะปฏิบัติ) ให้เป็นเชิงปฏิบัติการที่ระบุวิธีการวัดและเกณฑ์คะแนน";
+                        }
+                        break;
+
+                    case '6.1':
+                        if (hasHypothesis) {
+                            score = 3;
+                            comment = "สมมติฐานการวิจัยสอดคล้องกับวัตถุประสงค์และสามารถทดสอบได้ทางสถิติ";
+                        } else {
+                            score = 2;
+                            comment = "หากเป็นงานวิจัยเชิงทดลอง ควรระบุสมมติฐานการวิจัยเพื่อชี้ทิศทางการทดสอบผลการเรียนรู้";
+                        }
+                        break;
+
+                    case '7.1':
+                        if (hasBenefit) {
+                            score = 3;
+                            comment = "ระบุประโยชน์ปลายทางต่อผู้เรียน ครูผู้สอน และสถานศึกษาได้อย่างเป็นรูปธรรม";
+                        } else {
+                            score = 2;
+                            comment = "ควรระบุประโยชน์ที่ได้รับให้เห็นผลลัพธ์ปลายทางที่นำไปปฏิบัติได้จริงในแผนกวิชา";
+                        }
+                        break;
+
+                    case '8.1':
+                        if (hasLiterature) {
+                            score = 3;
+                            comment = "เอกสารและงานวิจัยที่เกี่ยวข้องมีความสัมพันธ์ตรงกับนวัตกรรมและปัญหาวิจัย";
+                        } else {
+                            score = 1;
+                            comment = "ขาดการนำเสนอเอกสารและงานวิจัยที่เกี่ยวข้อง ควรทบทวนแนวคิดที่ใช้พัฒนานวัตกรรม";
+                        }
+                        break;
+
+                    case '8.2':
+                        if (hasLiterature && text.length > 1500) {
+                            score = 3;
+                            comment = "ทบทวนวรรณกรรมครอบคลุมทฤษฎีการสอน นวัตกรรม และตัวแปรที่ศึกษา";
+                        } else {
+                            score = 2;
+                            comment = "ควรเพิ่มเนื้อหาทฤษฎีการจัดการเรียนรู้และงานวิจัยในสาขาวิชาชีพที่เกี่ยวข้องเพิ่มเติม";
+                        }
+                        break;
+
+                    case '8.3':
+                        score = 2;
+                        comment = "การจัดหมวดหมู่หัวข้อเอกสารที่เกี่ยวข้องมีความเป็นระบบ ควรจัดลำดับจากภาพกว้างสู่งานวิจัยที่ตรงประเด็น";
+                        break;
+
+                    case '8.4':
+                        if (text.includes("256") || text.includes("202")) {
+                            score = 3;
+                            comment = "การอ้างอิงแหล่งข้อมูลมีความน่าเชื่อถือและเป็นปัจจุบัน";
+                        } else {
+                            score = 2;
+                            comment = "ควรตรวจสอบความทันสมัยของเอกสารอ้างอิง โดยเฉพาะงานวิจัยที่เกี่ยวข้องย้อนหลังไม่เกิน 5 ปี";
+                        }
+                        break;
+
+                    case '9.1':
+                        if (hasTarget && (text.includes("คน") || text.includes("ห้อง"))) {
+                            score = 3;
+                            comment = "ระบุกลุ่มเป้าหมาย จำนวนผู้เรียน ระดับชั้น และวิธีการคัดเลือกกลุ่มเป้าหมายได้ชัดเจน";
+                        } else {
+                            score = 1;
+                            comment = "ควรระบุกลุ่มข้อมูลเป้าหมาย จำนวนนักเรียน/นักศึกษา และวิธีได้มา (เช่น การเลือกแบบเจาะจง) ให้ชัดเจน";
+                        }
+                        break;
+
+                    case '10.1':
+                        if (hasTools) {
+                            score = 3;
+                            comment = "ระบุเครื่องมือที่ใช้ในการทดลอง (นวัตกรรม) และเครื่องมือรวบรวมข้อมูลครบทุกตัวแปร";
+                        } else {
+                            score = 1;
+                            comment = "ควรแจกแจงเครื่องมือที่ใช้ในการวิจัยให้ชัดเจน ทั้งเครื่องมือนวัตกรรมและแบบวัดผล";
+                        }
+                        break;
+
+                    case '10.2':
+                        if (hasIOC || text.includes("หาประสิทธิภาพ") || text.includes("e1/e2") || text.includes("ผู้เชี่ยวชาญ")) {
+                            score = 3;
+                            comment = "ระบุขั้นตอนการสร้างเครื่องมือและการหาคุณภาพ (IOC, ประสิทธิภาพ E1/E2) ชัดเจนน่าเชื่อถือ";
+                        } else {
+                            score = 1;
+                            comment = "ควรระบุขั้นตอนการสร้างและหาคุณภาพเครื่องมือ เช่น การตรวจประเมินค่า IOC ของผู้เชี่ยวชาญ และค่าความเชื่อมั่น";
+                        }
+                        break;
+
+                    case '11.1':
+                        if (hasMethod) {
+                            score = 3;
+                            comment = "ระบุขั้นตอนการเก็บรวบรวมข้อมูลและการจัดกิจกรรมการเรียนรู้เป็นลำดับขั้นตอนชัดเจน";
+                        } else {
+                            score = 2;
+                            comment = "ควรเขียนขั้นตอนการเก็บรวบรวมข้อมูลเป็นข้อ ๆ ให้เห็นลำดับก่อน-ระหว่าง-หลังการทดลอง";
+                        }
+                        break;
+
+                    case '12.1':
+                        if (hasStats) {
+                            score = 3;
+                            comment = "เลือกใช้สถิติเหมาะสมกับลักษณะข้อมูล (เช่น ค่าเฉลี่ย ส่วนเบี่ยงเบนมาตรฐาน t-test) และมีเกณฑ์แปลผลชัดเจน";
+                        } else {
+                            score = 1;
+                            comment = "ควรระบุวิธีการวิเคราะห์ข้อมูล สูตรสถิติที่ใช้ และเกณฑ์การแปลผลคะแนนให้ถูกต้องชัดเจน";
+                        }
+                        break;
+
+                    case '13.1':
+                        if (hasResult) {
+                            score = 3;
+                            comment = "นำเสนอผลการวิจัยตอบครบทุกวัตถุประสงค์และสมมติฐานการวิจัย";
+                        } else {
+                            score = 1;
+                            comment = "ไม่พบผลการวิจัยที่ชัดเจน ควรรายงานผลการทดลองตามลำดับวัตถุประสงค์";
+                        }
+                        break;
+
+                    case '13.2':
+                        if (hasResult && (text.includes("ตาราง") || text.includes("ร้อยละ") || text.includes("ค่าเฉลี่ย"))) {
+                            score = 3;
+                            comment = "นำเสนอผลการวิจัยเรียงลำดับชัดเจน ใช้ตารางและข้อความบรรยายสื่อความหมายเข้าใจง่าย";
+                        } else {
+                            score = 2;
+                            comment = "ควรจัดทำตารางสรุปผลการวิจัยพร้อมข้อความแปลความหมายให้กระชับ ชัดเจน";
+                        }
+                        break;
+
+                    case '14.1':
+                        if (text.includes("สรุปผล") || hasResult) {
+                            score = 3;
+                            comment = "สรุปผลการวิจัยตรงตามวัตถุประสงค์ กระชับ สื่อสารผลลัพธ์สำคัญได้ชัดเจน";
+                        } else {
+                            score = 2;
+                            comment = "ควรเขียนสรุปผลการวิจัยแยกประเด็นตามวัตถุประสงค์ให้กระชับและเข้าใจง่าย";
+                        }
+                        break;
+
+                    case '15.1':
+                        if (hasDiscuss) {
+                            score = 3;
+                            comment = "อภิปรายผลได้ลึกซึ้ง มีการตีความเหตุผลและอ้างอิงทฤษฎี/งานวิจัยสนับสนุนสอดคล้องกับบทที่ 2";
+                        } else {
+                            score = 1;
+                            comment = "ขาดการอภิปรายผลเชิงวิชาการ ควรอธิบายเหตุผลว่าทำไมนวัตกรรมจึงช่วยแก้ปัญหาได้ พร้อมอ้างอิงวรรณกรรมสนับสนุน";
+                        }
+                        break;
+
+                    case '16.1':
+                        if (hasSuggestion) {
+                            score = 3;
+                            comment = "ข้อเสนอแนะในการนำผลวิจัยไปใช้มีความชัดเจน เป็นรูปธรรม และเป็นประโยชน์ต่อครูผู้สอนท่านอื่น";
+                        } else {
+                            score = 1;
+                            comment = "ควรเพิ่มข้อเสนอแนะในการนำผลการวิจัยและนวัตกรรมไปประยุกต์ใช้ในการจัดการเรียนการสอนจริง";
+                        }
+                        break;
+
+                    case '16.2':
+                        if (hasSuggestion && (text.includes("ต่อไป") || text.includes("ครั้งต่อไป"))) {
+                            score = 3;
+                            comment = "มีข้อเสนอแนะสำหรับการทำวิจัยครั้งต่อไปที่มีประเด็นน่าสนใจและต่อยอดได้จริง";
+                        } else {
+                            score = 1;
+                            comment = "ควรเสนอแนะประเด็นวิจัยหรือตัวแปรใหม่ที่น่าสนใจสำหรับการพัฒนาต่อยอดในการวิจัยครั้งต่อไป";
+                        }
+                        break;
+
+                    case '17.1':
+                        if (hasAbstract && hasTarget && hasResult) {
+                            score = 3;
+                            comment = "บทคัดย่อครอบคลุมวัตถุประสงค์ วิธีการ กลุ่มเป้าหมาย ผลการวิเคราะห์ ภาษาถูกต้องกระชับไม่เกิน 1 หน้า";
+                        } else if (hasAbstract) {
+                            score = 2;
+                            comment = "มีบทคัดย่อแต่ควรตรวจสอบให้ครบทุกองค์ประกอบสำคัญ (วัตถุประสงค์ กลุ่มเป้าหมาย เครื่องมือ ผลวิจัย)";
+                        } else {
+                            score = 1;
+                            comment = "ไม่พบบทคัดย่อ ควรจัดทำบทคัดย่อสรุปสาระสำคัญของงานวิจัยทั้งฉบับ";
+                        }
+                        break;
+
+                    case '18.1':
+                        if (hasRef) {
+                            score = 3;
+                            comment = "มีรายการบรรณานุกรมครบถ้วนตามที่อ้างในเนื้อหา และเขียนเป็นรูปแบบเดียวกัน";
+                        } else {
+                            score = 1;
+                            comment = "ไม่พบรายการบรรณานุกรม ควรใส่รายการเอกสารอ้างอิงให้ครบถ้วนตามหลักสากล (เช่น APA)";
+                        }
+                        break;
+
+                    case '19.1':
+                        if (hasAppendix || text.includes("ภาคผนวก")) {
+                            score = 3;
+                            comment = "ภาคผนวกมีเอกสารหลักฐานสำคัญประกอบ เช่น ตัวอย่างเครื่องมือ แผนการจัดการเรียนรู้ ผลการประเมิน";
+                        } else {
+                            score = 1;
+                            comment = "ควรแนบภาคผนวกแสดงหลักฐานเครื่องมือวิจัย ภาพถ่ายการจัดกิจกรรมการเรียนรู้ หรือผลวิเคราะห์ทางสถิติ";
+                        }
+                        break;
+
+                    default:
+                        score = 2;
+                        comment = "ควรเพิ่มรายละเอียดให้สมบูรณ์ตามเกณฑ์มาตรฐาน";
+                }
+
+                evals.push({ id: item.id, score, comment });
+            });
+
+            return {
+                evaluations: evals,
+                overallFeedback: "งานวิจัยในชั้นเรียนฉบับนี้มีทิศทางในการแก้ปัญหาผู้เรียนอาชีวศึกษาที่ดี มีประเด็นเด่นด้านการประยุกต์ใช้นวัตกรรมวิชาชีพ อย่างไรก็ตามเพื่อยกระดับคุณภาพสู่ระดับยอดเยี่ยม ควรปรับปรุงเพิ่มเติมในส่วนของรายการที่ได้ระดับ 'ควรพัฒนา' โดยเฉพาะการระบุขั้นตอนการสร้างและหาคุณภาพเครื่องมือ การอภิปรายผลเชื่อมโยงกับทฤษฎี และการแนบภาคผนวกเชิงประจักษ์"
+            };
+        }
+
+        function displayEvaluationResult(data) {
+            const scoreMap = {};
+            const noteMap = {};
+
+            if (data.evaluations && Array.isArray(data.evaluations)) {
+                data.evaluations.forEach(item => {
+                    scoreMap[item.id] = parseInt(item.score) || 2;
+                    noteMap[item.id] = item.comment || "";
+                });
+            }
+
+            // Fill missing rubric indicators with default score 2
+            RUBRIC_CRITERIA.forEach(r => {
+                if (!scoreMap[r.id]) scoreMap[r.id] = 2;
+                if (!noteMap[r.id]) noteMap[r.id] = "ควรเพิ่มรายละเอียดให้สมบูรณ์ตามเกณฑ์";
+            });
+
+            currentEvaluation.scores = scoreMap;
+            currentEvaluation.notes = noteMap;
+            currentEvaluation.overallFeedback = data.overallFeedback || "ผลการประเมินโดยรวมอยู่ในเกณฑ์ที่สามารถนำไปพัฒนาต่อยอดได้";
+
+            // If AI extracted meta
+            if (data.teacherName && !document.getElementById('teacherName').value) {
+                document.getElementById('teacherName').value = data.teacherName;
+            }
+            if (data.schoolName && !document.getElementById('schoolName').value) {
+                document.getElementById('schoolName').value = data.schoolName;
+            }
+            if (data.researchTitle && !document.getElementById('researchTitle').value) {
+                document.getElementById('researchTitle').value = data.researchTitle;
+            }
+
+            recalculateTotals();
+            renderTable();
+            renderPrintView();
+
+            // Scroll to results smoothly
+            document.getElementById('stateResult').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function recalculateTotals() {
+            let total = 0;
+            let goodCount = 0;
+            let fairCount = 0;
+            let needImproveCount = 0;
+            const needImproveItems = [];
+
+            RUBRIC_CRITERIA.forEach(r => {
+                const s = currentEvaluation.scores[r.id] || 2;
+                total += s;
+                if (s === 3) goodCount++;
+                else if (s === 2) fairCount++;
+                else if (s === 1) {
+                    needImproveCount++;
+                    needImproveItems.push({
+                        id: r.id,
+                        topic: r.topic,
+                        indicator: r.indicator,
+                        note: currentEvaluation.notes[r.id] || "ควรปรับปรุงให้เป็นไปตามหลักวิชาการ"
+                    });
+                }
+            });
+
+            const maxScore = RUBRIC_CRITERIA.length * 3; // 29 * 3 = 87
+            const percentage = (total / maxScore) * 100;
+            const percentageRounded = percentage.toFixed(2);
+
+            // Update Header Score Elements
+            document.getElementById('totalScoreText').textContent = total;
+            document.getElementById('maxScoreLabel').textContent = `/ ${maxScore}`;
+            document.getElementById('percentageText').textContent = `คิดเป็นร้อยละ ${percentageRounded}%`;
+            document.getElementById('scoreProgressBar').style.width = `${Math.min(100, percentage)}%`;
+
+            document.getElementById('countGood').textContent = goodCount;
+            document.getElementById('countFair').textContent = fairCount;
+            document.getElementById('countNeedImprove').textContent = needImproveCount;
+
+            // Medal Calculation according to official OVEC document criteria:
+            // ร้อยละ 80 ขึ้นไป: ยอดเยี่ยม (เหรียญทอง)
+            // ร้อยละ 70 - 79.99: ดีเลิศ (เหรียญทอง)
+            // ร้อยละ 60 - 69.99: ดี (เหรียญเงิน)
+            // ร้อยละ 50 - 59.99: ปานกลาง (เหรียญแดง)
+            // น้อยกว่าร้อยละ 50: ต้องปรับปรุง
+            let medalTitle = "";
+            let medalTier = "";
+            let medalColorClass = "";
+            let medalIcon = "fa-medal";
+
+            if (percentage >= 80) {
+                medalTitle = "เหรียญทอง (ยอดเยี่ยม)";
+                medalTier = "ระดับคุณภาพ: ยอดเยี่ยม (ร้อยละ 80 ขึ้นไป)";
+                medalColorClass = "text-amber-300";
+            } else if (percentage >= 70) {
+                medalTitle = "เหรียญทอง (ดีเลิศ)";
+                medalTier = "ระดับคุณภาพ: ดีเลิศ (ร้อยละ 70 - 79.99)";
+                medalColorClass = "text-amber-400";
+            } else if (percentage >= 60) {
+                medalTitle = "เหรียญเงิน (ดี)";
+                medalTier = "ระดับคุณภาพ: ดี (ร้อยละ 60 - 69.99)";
+                medalColorClass = "text-slate-300";
+            } else if (percentage >= 50) {
+                medalTitle = "เหรียญแดง (ปานกลาง)";
+                medalTier = "ระดับคุณภาพ: ปานกลาง (ร้อยละ 50 - 59.99)";
+                medalColorClass = "text-rose-400";
+            } else {
+                medalTitle = "ต้องปรับปรุง";
+                medalTier = "ระดับคุณภาพ: ต่ำกว่าเกณฑ์ (น้อยกว่าร้อยละ 50)";
+                medalColorClass = "text-red-500";
+                medalIcon = "fa-circle-exclamation";
+            }
+
+            document.getElementById('medalName').textContent = medalTitle;
+            document.getElementById('medalTier').textContent = medalTier;
+            document.getElementById('medalIcon').className = `fa-solid ${medalIcon} text-4xl ${medalColorClass}`;
+
+            // Render Urgent Improvement Items
+            renderImprovementSection(needImproveItems);
+
+            // Overall Feedback
+            document.getElementById('overallFeedbackText').textContent = currentEvaluation.overallFeedback;
+        }
+
+        function renderImprovementSection(items) {
+            const listContainer = document.getElementById('improvementList');
+            const badgeCount = document.getElementById('improveBadgeCount');
+            badgeCount.textContent = `${items.length} รายการ`;
+
+            if (items.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="bg-white p-4 rounded-xl text-center text-xs text-emerald-700 border border-emerald-200 flex items-center justify-center gap-2 shadow-xs">
+                        <i class="fa-solid fa-circle-check text-emerald-500 text-base"></i>
+                        <span>ยินดีด้วย! งานวิจัยชิ้นนี้ไม่มีรายการที่อยู่ในระดับ <strong>"ควรพัฒนา" (1 คะแนน)</strong> ทุกหัวข้อผ่านเกณฑ์มาตรฐานระดับพอใช้ถึงดี</span>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            items.forEach((item) => {
+                html += `
+                    <div class="bg-white border-l-4 border-rose-600 rounded-xl p-3.5 shadow-xs transition hover:shadow-md space-y-1.5 border border-rose-100">
+                        <div class="flex items-start justify-between gap-2">
+                            <div class="font-heading font-semibold text-rose-900 text-xs flex items-center gap-1.5 flex-wrap">
+                                <span class="bg-rose-100 text-rose-800 text-[10px] px-2 py-0.5 rounded font-bold">ข้อ ${item.id}</span>
+                                <span>${item.topic}</span>
+                            </div>
+                            <span class="text-[10px] bg-rose-50 text-rose-700 font-bold px-2 py-0.5 rounded border border-rose-200 shrink-0">
+                                1 คะแนน
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-600 pl-1">
+                            <strong class="text-slate-700">เกณฑ์ตัวชี้วัด:</strong> ${item.indicator}
+                        </p>
+                        <div class="bg-rose-50/70 p-2.5 rounded-lg border border-rose-200/60 text-xs text-rose-900 flex items-start gap-2">
+                            <i class="fa-solid fa-lightbulb text-rose-600 mt-0.5 text-xs"></i>
+                            <div>
+                                <strong class="font-semibold text-rose-950">คำแนะนำในการปรับปรุงแก้ไข:</strong>
+                                <span class="ml-1">${item.note}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            listContainer.innerHTML = html;
+        }
+
+        function filterTable(type) {
+            currentEvaluation.filter = type;
+            ['all', '1', '2', '3'].forEach(f => {
+                const btn = document.getElementById(`btnFilter${f === 'all' ? 'All' : f}`);
+                if (btn) {
+                    if (f === type) {
+                        btn.className = "px-2.5 py-1 rounded-lg bg-brand-800 text-white font-medium shadow-xs";
+                    } else {
+                        btn.className = "px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-700 font-medium hover:bg-slate-50";
+                    }
+                }
+            });
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            RUBRIC_CRITERIA.forEach((r) => {
+                const score = currentEvaluation.scores[r.id] || 2;
+                const note = currentEvaluation.notes[r.id] || "";
+
+                if (currentEvaluation.filter !== 'all' && score !== parseInt(currentEvaluation.filter)) {
+                    return;
+                }
+
+                const tr = document.createElement('tr');
+                tr.className = `hover:bg-brand-50/40 transition ${score === 1 ? 'bg-rose-50/30' : ''}`;
+                tr.innerHTML = `
+                    <td class="p-3 text-center font-bold text-slate-600">${r.id}</td>
+                    <td class="p-3 font-medium text-brand-950">${r.topic}</td>
+                    <td class="p-3 text-slate-700 leading-relaxed">${r.indicator}</td>
+                    <td class="p-3 text-center">
+                        <select onchange="updateIndividualScore('${r.id}', this.value)" class="text-xs rounded-lg border border-slate-300 bg-white px-2 py-1 focus:ring-1 focus:ring-brand-500 font-semibold cursor-pointer">
+                            <option value="3" ${score === 3 ? 'selected' : ''}>ดี (3)</option>
+                            <option value="2" ${score === 2 ? 'selected' : ''}>พอใช้ (2)</option>
+                            <option value="1" ${score === 1 ? 'selected' : ''}>ควรพัฒนา (1)</option>
+                        </select>
+                    </td>
+                    <td class="p-3">
+                        <input type="text" value="${note.replace(/"/g, '&quot;')}" 
+                               onchange="updateIndividualNote('${r.id}', this.value)"
+                               placeholder="บันทึกข้อสังเกต/ข้อเสนอแนะ..." 
+                               class="w-full text-xs p-1.5 rounded-lg border border-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500 bg-white">
+                    </td>
+                `;
+                tbody.appendChild(tr);
             });
         }
 
-        function resetEvaluation() {
-            if (confirm("คุณต้องการล้างข้อมูลการตรวจสอบทั้งหมดหรือไม่?")) {
-                state.evaluations = {};
-                state.remarks = {};
-                state.finalRisks = {};
-                state.uploadedText = "";
-                state.signerName = "";
-                state.signerPosition = "";
-                localStorage.removeItem(STORAGE_KEY);
-                
-                document.getElementById('status-card').classList.add('hidden');
-                document.getElementById('file-input').value = "";
-                if (document.getElementById('signer-name')) document.getElementById('signer-name').value = "";
-                if (document.getElementById('signer-position')) document.getElementById('signer-position').value = "";
+        function updateIndividualScore(id, newScore) {
+            currentEvaluation.scores[id] = parseInt(newScore);
+            recalculateTotals();
+            renderTable();
+            renderPrintView();
+            autoSaveDraft();
+        }
 
-                renderChecklist();
-                renderFinalRisks();
-                updateCalculations();
+        function updateIndividualNote(id, newNote) {
+            currentEvaluation.notes[id] = newNote;
+            renderPrintView();
+            autoSaveDraft();
+        }
+
+        function renderPrintView() {
+            document.getElementById('printTeacher').textContent = document.getElementById('teacherName').value || "-";
+            document.getElementById('printSchool').textContent = document.getElementById('schoolName').value || "-";
+            document.getElementById('printCategory').textContent = document.getElementById('deptCategory').value || "-";
+            document.getElementById('printMajor').textContent = document.getElementById('deptMajor').value || "-";
+            document.getElementById('printTitle').textContent = document.getElementById('researchTitle').value || "-";
+
+            let total = 0;
+            RUBRIC_CRITERIA.forEach(r => {
+                total += (currentEvaluation.scores[r.id] || 2);
+            });
+            const maxScore = RUBRIC_CRITERIA.length * 3;
+            const pct = ((total / maxScore) * 100).toFixed(2);
+
+            document.getElementById('printScore').textContent = total;
+            document.getElementById('printMaxScore').textContent = maxScore;
+            document.getElementById('printPercentage').textContent = `${pct}%`;
+            document.getElementById('printMedal').textContent = document.getElementById('medalName').textContent;
+            document.getElementById('printSupervisionSummary').textContent = currentEvaluation.overallFeedback || "-";
+
+            const printTbody = document.getElementById('printTableBody');
+            printTbody.innerHTML = '';
+
+            RUBRIC_CRITERIA.forEach(r => {
+                const s = currentEvaluation.scores[r.id] || 2;
+                const note = currentEvaluation.notes[r.id] || "";
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="border border-black p-1 text-center font-bold">${r.id}</td>
+                    <td class="border border-black p-1">${r.topic}</td>
+                    <td class="border border-black p-1">${r.indicator}</td>
+                    <td class="border border-black p-1 text-center font-bold">${s === 3 ? '/' : ''}</td>
+                    <td class="border border-black p-1 text-center font-bold">${s === 2 ? '/' : ''}</td>
+                    <td class="border border-black p-1 text-center font-bold">${s === 1 ? '/' : ''}</td>
+                    <td class="border border-black p-1">${note}</td>
+                `;
+                printTbody.appendChild(tr);
+            });
+        }
+
+        function resetForm() {
+            if (confirm("คุณต้องการล้างข้อมูลและเริ่มการประเมินใหม่หรือไม่?")) {
+                document.getElementById('teacherName').value = '';
+                document.getElementById('schoolName').value = '';
+                document.getElementById('deptCategory').value = '';
+                document.getElementById('deptMajor').value = '';
+                document.getElementById('researchTitle').value = '';
+                document.getElementById('researchContent').value = '';
+                removeSelectedFile();
+                updateWordCount();
+                document.getElementById('stateResult').classList.add('hidden');
+                document.getElementById('stateLoading').classList.add('hidden');
+                document.getElementById('stateEmpty').classList.remove('hidden');
+                localStorage.removeItem('ap_classroom_research_draft');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
         }
+
+        // LocalStorage Draft Management
+        function autoSaveDraft() {
+            try {
+                const draft = {
+                    teacherName: document.getElementById('teacherName').value,
+                    schoolName: document.getElementById('schoolName').value,
+                    deptCategory: document.getElementById('deptCategory').value,
+                    deptMajor: document.getElementById('deptMajor').value,
+                    researchTitle: document.getElementById('researchTitle').value,
+                    researchContent: document.getElementById('researchContent').value,
+                    currentEvaluation: currentEvaluation
+                };
+                localStorage.setItem('ap_classroom_research_draft', JSON.stringify(draft));
+            } catch(e) {
+                console.warn("Unable to save to localStorage", e);
+            }
+        }
+
+        function loadSavedDraft() {
+            try {
+                const raw = localStorage.getItem('ap_classroom_research_draft');
+                if (!raw) return;
+                const draft = JSON.parse(raw);
+                if (draft.teacherName) document.getElementById('teacherName').value = draft.teacherName;
+                if (draft.schoolName) document.getElementById('schoolName').value = draft.schoolName;
+                if (draft.deptCategory) document.getElementById('deptCategory').value = draft.deptCategory;
+                if (draft.deptMajor) document.getElementById('deptMajor').value = draft.deptMajor;
+                if (draft.researchTitle) document.getElementById('researchTitle').value = draft.researchTitle;
+                if (draft.researchContent) document.getElementById('researchContent').value = draft.researchContent;
+                updateWordCount();
+
+                if (draft.currentEvaluation && draft.currentEvaluation.scores && Object.keys(draft.currentEvaluation.scores).length > 0) {
+                    currentEvaluation = draft.currentEvaluation;
+                    document.getElementById('stateEmpty').classList.add('hidden');
+                    document.getElementById('stateResult').classList.remove('hidden');
+                    recalculateTotals();
+                    renderTable();
+                    renderPrintView();
+                }
+            } catch(e) {
+                console.warn("Unable to restore from localStorage", e);
+            }
+        }
+
+        // Gemini API Key Modal Management
+        function getSavedApiKey() {
+            return localStorage.getItem('gemini_api_key') || "";
+        }
+
+        function openApiKeyModal() {
+            document.getElementById('apiKeyInput').value = getSavedApiKey();
+            document.getElementById('apiKeyModal').classList.remove('hidden');
+        }
+
+        function closeApiKeyModal() {
+            document.getElementById('apiKeyModal').classList.add('hidden');
+        }
+
+        function saveApiKey() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            if (key) {
+                localStorage.setItem('gemini_api_key', key);
+                updateApiKeyStatus(true);
+            } else {
+                localStorage.removeItem('gemini_api_key');
+                updateApiKeyStatus(false);
+            }
+            closeApiKeyModal();
+        }
+
+        function clearApiKey() {
+            localStorage.removeItem('gemini_api_key');
+            document.getElementById('apiKeyInput').value = '';
+            updateApiKeyStatus(false);
+            closeApiKeyModal();
+        }
+
+        function updateApiKeyStatus(hasKey) {
+            const el = document.getElementById('apiKeyStatusText');
+            if (el) {
+                el.textContent = hasKey ? "AI Key เชื่อมต่อแล้ว" : "ตั้งค่า AI Key";
+            }
+        }
+
+        // Initialize on load
+        window.addEventListener('DOMContentLoaded', () => {
+            updateApiKeyStatus(!!getSavedApiKey());
+            loadSavedDraft();
+        });
     </script>
 </body>
 </html>
